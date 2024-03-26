@@ -6,13 +6,8 @@ import serial
 import pickle
 import json
 
-import time
-import threading
-
-arduino_id = 123
 arduino = serial.Serial('COM4', 9600)
 video_capture = cv2.VideoCapture(0)
-
 
 classificador_rosto = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
@@ -48,10 +43,8 @@ def detectar_e_desenhar_rostos(frame):
     for (x, y, w, h) in rostos:
         rosto_atual = gray_frame[y:y+h, x:x+w]
 
-        global cadastrado
-
         cadastrado = False
-        
+
         cursor.execute("SELECT user_id, face_img FROM facial_recognition")
         registros = cursor.fetchall()
 
@@ -72,25 +65,26 @@ def detectar_e_desenhar_rostos(frame):
             arduino.write(b'1')
             print('Desconhecido')
 
-def destravar():
-    if cadastrado:
-        resultado_label.config(text="Bem vindo!!")
-        cursor.execute("REPLACE INTO arduino (id, `unlock`) VALUES (%s, TRUE)", (arduino_id,))
-        conexao_bd.commit()
-        threading.Thread(target=reset_unlock).start()
+def cadastrar_rosto():
+    ret, frame = video_capture.read()
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    rostos = classificador_rosto.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+    user_id = id_entry.get()
+
+    if user_id and len(rostos) > 0:
+        for (x, y, w, h) in rostos:
+            rosto_cadastrado = gray_frame[y:y+h, x:x+w]
+            rosto_serializado = pickle.dumps(rosto_cadastrado)    
+            cursor.execute("REPLACE INTO users (id) VALUES (%s)", (user_id,))
+            cursor.execute("INSERT INTO facial_recognition (user_id, face_img) VALUES (%s, %s)", (user_id, rosto_serializado))
+            conexao_bd.commit()
+            
+        resultado_label.config(text=f"Rosto cadastrado para o usuário: {user_id} fotos:{len(rostos)}")
+    elif not user_id:
+        resultado_label.config(text="Por favor, insira o ID do usuário")
     else:
-        resultado_label.config(text="Você não está cadastrado no sistema")
-
-def travar():
-    cursor.execute("REPLACE INTO arduino (id, `unlock`) VALUES (%s, FALSE)", (arduino_id,))
-    conexao_bd.commit()
-
-def reset_unlock():
-    with mysql.connector.connect(**config) as conexao_bd_temp:
-        with conexao_bd_temp.cursor() as temp_cursor:
-            time.sleep(2)
-            temp_cursor.execute("REPLACE INTO arduino (id, `unlock`) VALUES (%s, FALSE)", (arduino_id,))
-            conexao_bd_temp.commit()
+        resultado_label.config(text="Nenhum rosto detectado para cadastro")
 
 janela = tk.Tk()
 janela.title("Verificação de Rosto")
@@ -98,10 +92,13 @@ janela.title("Verificação de Rosto")
 camera_label = tk.Label(janela)
 camera_label.pack()
 
-cadastrar_botao = tk.Button(janela, text="Destravar", command=destravar)
-cadastrar_botao.pack()
+id_label = tk.Label(janela, text="ID do Usuário:")
+id_label.pack()
 
-cadastrar_botao = tk.Button(janela, text="Travar", command=travar)
+id_entry = tk.Entry(janela)
+id_entry.pack()
+
+cadastrar_botao = tk.Button(janela, text="Cadastrar Rosto", command=cadastrar_rosto)
 cadastrar_botao.pack()
 
 resultado_label = tk.Label(janela, text="")
