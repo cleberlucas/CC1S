@@ -40,15 +40,15 @@ def detectar_e_desenhar_rostos(frame):
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     rostos = classificador_rosto.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
-    cursor.execute("SELECT nome, rosto FROM rostos")
-    registros = cursor.fetchall()
-
     for (x, y, w, h) in rostos:
         rosto_atual = gray_frame[y:y+h, x:x+w]
 
         cadastrado = False
 
-        for nome, rosto_serializado in registros:
+        cursor.execute("SELECT user_id, face_img FROM facial_recognition")
+        registros = cursor.fetchall()
+
+        for user_id, rosto_serializado in registros:
             rosto_cadastrado = pickle.loads(rosto_serializado)
             res = cv2.matchTemplate(rosto_atual, rosto_cadastrado, cv2.TM_CCOEFF_NORMED)
             _, max_val, _, _ = cv2.minMaxLoc(res)
@@ -56,8 +56,9 @@ def detectar_e_desenhar_rostos(frame):
             if max_val > 0.7:
                 cadastrado = True
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                cv2.putText(frame, nome, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(frame, str(user_id), (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                 break
+
         if not cadastrado:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
             cv2.putText(frame, "Desconhecido", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
@@ -69,22 +70,19 @@ def cadastrar_rosto():
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     rostos = classificador_rosto.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
-    nome = nome_entry.get()
+    user_id = id_entry.get()
 
-    if nome and len(rostos) > 0:
+    if user_id and len(rostos) > 0:
         for (x, y, w, h) in rostos:
             rosto_cadastrado = gray_frame[y:y+h, x:x+w]
-            
-            # Serializar o array numpy em bytes
-            rosto_serializado = pickle.dumps(rosto_cadastrado)
-            
-            # Inserir os dados no banco de dados MySQL
-            cursor.execute("INSERT INTO rostos (nome, rosto) VALUES (%s, %s)", (nome, rosto_serializado))
+            rosto_serializado = pickle.dumps(rosto_cadastrado)    
+            cursor.execute("REPLACE INTO users (id) VALUES (%s)", (user_id,))
+            cursor.execute("INSERT INTO facial_recognition (user_id, face_img) VALUES (%s, %s)", (user_id, rosto_serializado))
             conexao_bd.commit()
             
-        resultado_label.config(text=f"Rosto cadastrado: {nome} fotos:{len(rostos)}")
-    elif not nome:
-        resultado_label.config(text="Por favor, insira o nome da pessoa")
+        resultado_label.config(text=f"Rosto cadastrado para o usuário: {user_id} fotos:{len(rostos)}")
+    elif not user_id:
+        resultado_label.config(text="Por favor, insira o ID do usuário")
     else:
         resultado_label.config(text="Nenhum rosto detectado para cadastro")
 
@@ -94,11 +92,11 @@ janela.title("Verificação de Rosto")
 camera_label = tk.Label(janela)
 camera_label.pack()
 
-nome_label = tk.Label(janela, text="Nome:")
-nome_label.pack()
+id_label = tk.Label(janela, text="ID do Usuário:")
+id_label.pack()
 
-nome_entry = tk.Entry(janela)
-nome_entry.pack()
+id_entry = tk.Entry(janela)
+id_entry.pack()
 
 cadastrar_botao = tk.Button(janela, text="Cadastrar Rosto", command=cadastrar_rosto)
 cadastrar_botao.pack()
