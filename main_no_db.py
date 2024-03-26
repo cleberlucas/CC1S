@@ -44,7 +44,7 @@ def detectar_e_desenhar_rostos(frame):
                 res = cv2.matchTemplate(rosto_atual, rosto_cadastrado, cv2.TM_CCOEFF_NORMED)
                 _, max_val, _, _ = cv2.minMaxLoc(res)
 
-                if max_val > 0.7:  # Ajustando o threshold de similaridade
+                if max_val > 0.7:
                     cadastrado = True
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                     cv2.putText(frame, nome, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
