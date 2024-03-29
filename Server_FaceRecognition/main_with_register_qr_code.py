@@ -2,10 +2,10 @@ import cv2
 import tkinter as tk
 from PIL import Image, ImageTk
 import mysql.connector
-import serial
 import pickle
 import json
-import requests
+import cv2
+from pyzbar.pyzbar import decode
 
 #arduino = serial.Serial('COM4', 9600)
 video_capture = cv2.VideoCapture(0)
@@ -31,6 +31,7 @@ def atualizar_camera():
         frame = cv2.flip(frame, 1)
         frame_atual = frame
 
+        ler_qr_code(frame)
         detectar_e_desenhar_rostos(frame)
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -43,6 +44,19 @@ def atualizar_camera():
         camera_label.image = photo
 
     janela.after(10, atualizar_camera)
+
+def ler_qr_code(frame):
+    decoded_objects = decode(frame)
+    for obj in decoded_objects:
+        if obj.type == 'QRCODE':
+            qr_data = obj.data.decode('utf-8')
+            print("QR Code Data:", qr_data)
+            try:
+                qr_objeto = json.loads(qr_data)
+                print("JSON Object:", qr_objeto)
+                # Faça o que você precisa com o objeto JSON aqui
+            except json.JSONDecodeError:
+                print("Erro ao decodificar JSON")
 
 def detectar_e_desenhar_rostos(frame):
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
