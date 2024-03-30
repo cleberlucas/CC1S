@@ -10,6 +10,13 @@ CREATE TABLE user (
     `name` VARCHAR(255) NOT NULL;
 );
 
+CREATE TABLE esp_info (
+    id INT PRIMARY KEY,
+    url VARCHAR(255) NOT NULL,
+    ssid VARCHAR(255) NOT NULL,
+    last_start DATETIME
+);
+
 CREATE TABLE unifran (
     rgm INT PRIMARY KEY,
     user_id INT NOT NULL
