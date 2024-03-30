@@ -44,13 +44,13 @@ WiFiClient client;
 void startCameraServer();
 void setupLedFlash(int pin);
 
-void sendDataToDbApiClient() {
+void sendDataIniTodbApiClient() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
 
-    String payload = "{\"id\": 8266, \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\"}";
+    String payload = "{\"id\": 32, \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\"}";
 
-    Serial.println("Sending request to the server...");
+    Serial.println("Enviando requisição para o servidor...");
 
     http.begin(client, String(dbApiClient) + "/esp/start");
     http.addHeader("Content-Type", "application/json");
@@ -59,15 +59,15 @@ void sendDataToDbApiClient() {
 
     if (httpCode > 0) {
       String response = http.getString();
-      Serial.println("Server response: " + response);
+      Serial.println("Resposta do servidor: " + response);
     } else {
-      Serial.println("Error sending request to the server");
+      Serial.println("Erro ao enviar requisição para o servidor");
       Serial.println(http.errorToString(httpCode));
     }
 
     http.end();
   } else {
-    Serial.println("Error: not connected to WiFi network");
+    Serial.println("Erro: não conectado à rede WiFi");
   }
 }
 
@@ -97,8 +97,8 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.frame_size = FRAMESIZE_UXGA;
-  config.pixel_format = PIXFORMAT_JPEG; // for streaming
-  //config.pixel_format = PIXFORMAT_RGB565; // for face detection/recognition
+  //config.pixel_format = PIXFORMAT_JPEG; // for streaming
+  config.pixel_format = PIXFORMAT_RGB565; // for face detection/recognition
   config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
   config.fb_location = CAMERA_FB_IN_PSRAM;
   config.jpeg_quality = 12;

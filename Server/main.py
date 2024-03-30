@@ -48,9 +48,9 @@ def update_camera():
 
         #frame = frame.resize((320, 240), Image.ANTIALIAS)
 
-        photo = ImageTk.PhotoImage(image=frame)
-        camera_label.config(image=photo)
-        camera_label.image = photo
+        #photo = ImageTk.PhotoImage(image=frame)
+        #camera_label.config(image=photo)
+        #camera_label.image = photo
 
     window.after(1, update_camera)
 
@@ -87,12 +87,14 @@ def detect_and_draw_faces(frame):
                 registered = True
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.putText(frame, str(name), (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                print(name)   
                 break
                
-        if automatic_registration:  
+        if  not registered and automatic_registration:  
             register_face(frame, x, y, w, h)
-            registered = True        
-        elif not registered:
+            registered = True
+            print('Registered')   
+        else:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
             cv2.putText(frame, "Unknown", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
             print('Unknown')
@@ -149,9 +151,12 @@ def toggle_automatic_registration():
 
 window = tk.Tk()
 window.title("Face Recognition")
+'''
 
 camera_label = tk.Label(window)
 camera_label.pack()
+
+'''
 
 id_label = tk.Label(window, text="Enter your RGM:")
 id_label.pack()
