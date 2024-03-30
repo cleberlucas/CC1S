@@ -19,63 +19,63 @@ const int D6 = 12;
 const int D7 = 13;
 const int D8 = 15;
 
-#define botaoVermelho   D3
-#define botaoAzul   D4
-#define ledBotaoVermelho   D5
-#define ledBotaoAzul   D6
-#define ledReconheceuRosto   D7
-#define ledReconheceuQrcode   D8
+#define redButtonPin   D3
+#define blueButtonPin   D4
+#define redButtonLedPin   D5
+#define blueButtonLedPin   D6
+#define recognizedFaceLedPin   D7
+#define recognizedQrCodeLedPin   D8
 
-void handleReconheceuRosto() {
-  digitalWrite(ledReconheceuRosto, HIGH);
+void handleRecognizedFace() {
+  digitalWrite(recognizedFaceLedPin, HIGH);
 }
 
-void handleNaoReconheceuRosto() {
-  digitalWrite(ledReconheceuRosto, LOW);
+void handleUnrecognizedFace() {
+  digitalWrite(recognizedFaceLedPin, LOW);
 }
 
-void handleReconheceuQrcode() {
-  digitalWrite(ledReconheceuQrcode, HIGH);
+void handleRecognizedQrCode() {
+  digitalWrite(recognizedQrCodeLedPin, HIGH);
 }
 
-void handleNaoReconheceuQrcode() {
-  digitalWrite(ledReconheceuQrcode, LOW);
+void handleUnrecognizedQrCode() {
+  digitalWrite(recognizedQrCodeLedPin, LOW);
 }
 
-void handleLiberarBotoes() {
-  pinMode(botaoAzul, INPUT);
-  pinMode(botaoVermelho, INPUT);
+void handleEnableButtons() {
+  pinMode(blueButtonPin, INPUT);
+  pinMode(redButtonPin, INPUT);
 }
 
-void handleTravarBotoes() {
-  pinMode(botaoAzul, INPUT_PULLUP);
-  pinMode(botaoVermelho, INPUT_PULLUP);
+void handleDisableButtons() {
+  pinMode(blueButtonPin, INPUT_PULLUP);
+  pinMode(redButtonPin, INPUT_PULLUP);
 }
 
-void sendDataInitoServer() {
+void sendDataToDbApiClient() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
 
     String payload = "{\"id\": 8266, \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\"}";
 
-    Serial.println("Enviando requisição para o servidor...");
+    Serial.println("Sending request to the server...");
 
-    http.begin(client, String(dbApiClient) + "/enviar-url");
+    http.begin(client, String(dbApiClient) + "/esp/start");
     http.addHeader("Content-Type", "application/json");
 
     int httpCode = http.POST(payload);
 
     if (httpCode > 0) {
       String response = http.getString();
-      Serial.println("Resposta do servidor: " + response);
+      Serial.println("Server response: " + response);
     } else {
-      Serial.println("Erro ao enviar requisição para o servidor");
+      Serial.println("Error sending request to the server");
       Serial.println(http.errorToString(httpCode));
     }
 
     http.end();
   } else {
-    Serial.println("Erro: não conectado à rede WiFi");
+    Serial.println("Error: not connected to WiFi network");
   }
 }
 
@@ -84,16 +84,16 @@ void setup() {
   delay(10);
   Serial.println('\n');
 
-  pinMode(ledReconheceuRosto, OUTPUT);
-  pinMode(ledReconheceuQrcode, OUTPUT);
-  pinMode(ledBotaoAzul, OUTPUT);
-  pinMode(ledBotaoVermelho, OUTPUT);
+  pinMode(recognizedFaceLedPin, OUTPUT);
+  pinMode(recognizedQrCodeLedPin, OUTPUT);
+  pinMode(blueButtonLedPin, OUTPUT);
+  pinMode(redButtonLedPin, OUTPUT);
 
-  pinMode(botaoAzul, INPUT_PULLUP);
-  pinMode(botaoVermelho, INPUT_PULLUP);
+  pinMode(blueButtonPin, INPUT_PULLUP);
+  pinMode(redButtonPin, INPUT_PULLUP);
   
   WiFi.begin(ssid, password);
-  Serial.print("Conectando a ");
+  Serial.print("Connecting to ");
   Serial.print(ssid); 
   Serial.println(" ...");
 
@@ -104,23 +104,23 @@ void setup() {
     Serial.print(' ');
   }
 
-  sendDataInitoServer();
-
   Serial.println('\n');
-  Serial.println("Conexão estabelecida!");  
-  Serial.print("Endereço IP:\t");
+  Serial.println("Connection established!");  
+  Serial.print("IP Address:\t");
   Serial.println(WiFi.localIP());
 
+  sendDataToDbApiClient();
+
   server.on("/", HTTP_GET, []() {
-    server.send(200, "text/plain", "Olá! Este é o servidor ESP8266.");
+    server.send(200, "text/plain", "Hello! This is ESP8266 server.");
   });
 
-  server.on("/reconheceu-rosto", HTTP_GET, handleReconheceuRosto);
-  server.on("/nao-reconheceu-rosto", HTTP_GET, handleNaoReconheceuRosto);
-  server.on("/reconheceu-qrcode", HTTP_GET, handleReconheceuQrcode);
-  server.on("/nao-reconheceu-qrcode", HTTP_GET, handleNaoReconheceuQrcode);
-  server.on("/liberar-botoes", HTTP_GET, handleLiberarBotoes);
-  server.on("/travar-botoes", HTTP_GET, handleTravarBotoes);
+  server.on("/recognized-face", HTTP_GET, handleRecognizedFace);
+  server.on("/unrecognized-face", HTTP_GET, handleUnrecognizedFace);
+  server.on("/recognized-qrcode", HTTP_GET, handleRecognizedQrCode);
+  server.on("/unrecognized-qrcode", HTTP_GET, handleUnrecognizedQrCode);
+  server.on("/enable-buttons", HTTP_GET, handleEnableButtons);
+  server.on("/disable-buttons", HTTP_GET, handleDisableButtons);
 
   server.begin();
 }

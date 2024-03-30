@@ -1,6 +1,6 @@
 #include "esp_camera.h"
 #include <WiFi.h>
-
+#include <HTTPClient.h>
 //
 // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
 //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
@@ -37,9 +37,39 @@
 // ===========================
 const char* ssid = "S20+";
 const char* password = "11111111";
+const char* dbApiClient = "http://192.168.21.192:5000";
+
+WiFiClient client;
 
 void startCameraServer();
 void setupLedFlash(int pin);
+
+void sendDataToDbApiClient() {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+
+    String payload = "{\"id\": 8266, \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\"}";
+
+    Serial.println("Sending request to the server...");
+
+    http.begin(client, String(dbApiClient) + "/esp/start");
+    http.addHeader("Content-Type", "application/json");
+
+    int httpCode = http.POST(payload);
+
+    if (httpCode > 0) {
+      String response = http.getString();
+      Serial.println("Server response: " + response);
+    } else {
+      Serial.println("Error sending request to the server");
+      Serial.println(http.errorToString(httpCode));
+    }
+
+    http.end();
+  } else {
+    Serial.println("Error: not connected to WiFi network");
+  }
+}
 
 void setup() {
   Serial.begin(115200);
@@ -143,10 +173,12 @@ void setup() {
   Serial.println("WiFi connected");
 
   startCameraServer();
-
+  
   Serial.print("Camera Ready! Use 'http://");
   Serial.print(WiFi.localIP());
   Serial.println("' to connect");
+
+  sendDataIniTodbApiClient();
 }
 
 void loop() {
