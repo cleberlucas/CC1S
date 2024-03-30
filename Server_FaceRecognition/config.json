@@ -1,6 +1,11 @@
 {
-  "host": "localhost",
-  "user": "root",
-  "password": "123456",
-  "database": "project_x"
+  "db": {
+    "host": "localhost",
+    "user": "root",
+    "password": "123456",
+    "database": "project_x"
+  },
+  "esp32cam": {
+    "url": "http://192.168.15.101:81/stream"
+  }
 }
