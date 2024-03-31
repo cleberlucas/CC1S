@@ -4,8 +4,5 @@
     "user": "root",
     "password": "123456",
     "database": "project_x"
-  },
-  "esp32cam": {
-    "url": "http://192.168.21.248:81/stream"
   }
 }

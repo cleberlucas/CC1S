@@ -37,14 +37,14 @@
 // ===========================
 const char* ssid = "S20+";
 const char* password = "11111111";
-const char* dbApiClient = "http://192.168.21.192:5000";
+const char* dbApiUrl = "http://192.168.21.192:5000";
 
 WiFiClient client;
 
 void startCameraServer();
 void setupLedFlash(int pin);
 
-void sendDataIniTodbApiClient() {
+void sendDataToDbApiUrl() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
 
@@ -52,7 +52,7 @@ void sendDataIniTodbApiClient() {
 
     Serial.println("Enviando requisição para o servidor...");
 
-    http.begin(client, String(dbApiClient) + "/esp/start");
+    http.begin(client, String(dbApiUrl) + "/esp/start");
     http.addHeader("Content-Type", "application/json");
 
     int httpCode = http.POST(payload);
@@ -178,7 +178,7 @@ void setup() {
   Serial.print(WiFi.localIP());
   Serial.println("' to connect");
 
-  sendDataIniTodbApiClient();
+  sendDataToDbApiUrl();
 }
 
 void loop() {
