@@ -3,6 +3,7 @@ import mysql.connector
 from mysql.connector import Error
 import json
 import pickle
+import base64
 
 with open('config.json') as f:
     config = json.load(f)
@@ -118,16 +119,17 @@ def get_faces():
             cursor = db_connection.cursor()
 
             if id:
-                cursor.execute("SELECT u.`name`, u.id FROM facial_recognition f INNER JOIN user u ON f.user_id = u.id WHERE u.id = %s", (id,))
+                cursor.execute("SELECT u.`name`, u.id, f.face_img FROM facial_recognition f INNER JOIN user u ON f.user_id = u.id WHERE u.id = %s", (id,))
             else:
-                cursor.execute("SELECT u.`name`, u.id FROM facial_recognition f INNER JOIN user u ON f.user_id = u.id")
+                cursor.execute("SELECT u.`name`, u.id, f.face_img FROM facial_recognition f INNER JOIN user u ON f.user_id = u.id")
             
             records = cursor.fetchall()
 
             face_data = []
-            for name, serialized_face in records:
+            for name, user_id, serialized_face_base64 in records:
+                serialized_face = base64.b64decode(serialized_face_base64)  # Decodificar a imagem de base64
                 registered_face = pickle.loads(serialized_face)
-                face_data.append({'name': name, 'serialized_face': registered_face.tolist()})
+                face_data.append({'name': name, 'user_id': user_id, 'face_img': registered_face.tolist()})
 
             cursor.close()
             db_connection.close()
