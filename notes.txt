@@ -1,6 +1,4 @@
 qrcode json example:
-    {
-        "id":"34542345",
-        "type": "rgm",
-        "name": "Cleber L L de Oliveira"
-    }
+{
+    "id":1
+}

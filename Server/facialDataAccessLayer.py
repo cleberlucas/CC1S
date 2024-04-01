@@ -141,5 +141,68 @@ def get_faces():
     except mysql.connector.Error as err:
         return jsonify({'message': 'Error executing SQL query: ' + str(err)}), 500
 
+@app.route('/user/exists', methods=['GET'])
+def check_user_exists():
+    try:
+        id = request.args.get('id')
+        if not id:
+            return jsonify({'message': 'ID parameter is missing'}), 400
+
+        db_config = config.get("db", {})
+        db_connection = mysql.connector.connect(
+            host=db_config.get("host", "localhost"),
+            user=db_config.get("user", "root"),
+            password=db_config.get("password", ""),
+            database=db_config.get("database", "")
+        )
+
+        if db_connection.is_connected():
+            cursor = db_connection.cursor()
+            cursor.execute("SELECT COUNT(*) FROM user WHERE id = %s", (id,))
+            user_exists = cursor.fetchone()[0]
+            cursor.close()
+            db_connection.close()
+
+            return jsonify({'exists': bool(user_exists)})
+        else:
+            return jsonify({'message': 'Database connection failed'}), 500
+        
+
+
+    except mysql.connector.Error as err:
+        return jsonify({'message': 'Error executing SQL query: ' + str(err)}), 500
+
+@app.route('/esp/register-mode', methods=['GET'])
+def get_esp_register_mode():
+    try:
+        id = request.args.get('id')
+        if not id:
+            return jsonify({'message': 'ID parameter is missing'}), 400
+
+        db_config = config.get("db", {})
+        db_connection = mysql.connector.connect(
+            host=db_config.get("host", "localhost"),
+            user=db_config.get("user", "root"),
+            password=db_config.get("password", ""),
+            database=db_config.get("database", "")
+        )
+
+        if db_connection.is_connected():
+            cursor = db_connection.cursor()
+            cursor.execute("SELECT register_mode FROM esp_info WHERE id = %s", (id,))
+            register_mode = cursor.fetchone()
+            cursor.close()
+            db_connection.close()
+
+            if register_mode is not None:
+                return jsonify({'register_mode': bool(register_mode[0])})
+            else:
+                return jsonify({'message': 'User not found'}), 404
+        else:
+            return jsonify({'message': 'Database connection failed'}), 500
+
+    except mysql.connector.Error as err:
+        return jsonify({'message': 'Error executing SQL query: ' + str(err)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

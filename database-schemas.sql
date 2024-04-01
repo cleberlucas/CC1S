@@ -14,6 +14,7 @@ CREATE TABLE esp_info (
     id INT PRIMARY KEY,
     url VARCHAR(255) NOT NULL,
     ssid VARCHAR(255) NOT NULL,
+    register_mode BOOLEAN NOT NULL DEFAULT FALSE,
     last_start DATETIME
 );
 
