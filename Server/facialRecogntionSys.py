@@ -1,6 +1,5 @@
 import cv2
 import pickle
-import json
 import requests
 from pyzbar.pyzbar import decode
 import time
@@ -10,52 +9,51 @@ import threading
 
 face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
-with open('config.json') as f:
-    config = json.load(f)
-
+local = None
 video_url = ""
 facialDataAccessLayerURL =  "http://127.0.0.1:5000/"
 
 esp_32_url_info = "http://"
-response = requests.get(facialDataAccessLayerURL + "esp/url/32")
+esp_32_id_info=int(input("set ESP32 to init:<id> "))
+response = requests.get(facialDataAccessLayerURL + f"esp?id={esp_32_id_info}")
 if response.status_code == 200:
     esp_32_url_info = esp_32_url_info + response.json()['url']
-    print("esp-32-url: " + esp_32_url_info)
     video_url = esp_32_url_info + ":81/stream"
+    local = response.json()['local']
+
+    print("esp-32-url: " + esp_32_url_info)
+    if not local: 
+        print("local: " + str(local))
 else:
-    print("error-esp-32-url: ", response.json()['message'])
+    print("Failed to get ESP32 url:  ", response.json()['message'])
     exit()
 
 esp_8266_url_info = "http://"
-response = requests.get(facialDataAccessLayerURL + "esp/url/8266")
+esp8266_id_info=int(input("set ESP8266 to init:<id> "))
+response = requests.get(facialDataAccessLayerURL + f"esp?id={esp8266_id_info}")
 if response.status_code == 200:
     esp_8266_url_info = esp_8266_url_info + response.json()['url']
+    
     print("esp-8266-url: " + esp_8266_url_info)
+    if not local: 
+        local = response.json()['local']
+        print("local: " + str(local))
+
 else:
-    print("error-esp-8266-url: ", response.json()['message'])
+    print("Failed to get ESP8266 url: ", response.json()['message'])
     exit()
-
-
 
 def faceDetection():
     global esp_last_state_face_detection
     global esp_last_state_face_unrecognized
-    global esp_last_state_qr_detection
-    global esp_last_state_qr_recognized
     global esp_last_state_door
-    global current_user_id
-    global video_capture
 
     esp_last_state_face_detection = False
     esp_last_state_face_unrecognized = False
-    esp_last_state_qr_recognized = False
-    esp_last_state_qr_detection = False
     esp_last_state_door = False
-    current_user_id = 0
-    video_capture = None
 
     if video_url:
-        print ("video-url: "+video_url)
+        print ("video-url: "+ video_url)
         
     else:
         print("ESP32-CAM camera URL not found in the configuration file.")
@@ -68,77 +66,16 @@ def faceDetection():
         video_capture = cv2.VideoCapture(video_url)
         ret, frame = video_capture.read()
         if ret:
-            qr(frame)
-            if current_user_id != 0:    
-                if face(frame):
-                    send_request_to_server("/leds/off")          
-                    send_request_to_server("/door/open")
-                    time.sleep(5)
-                    faceDetection()
+            if face(frame):
+                send_request_to_server("/leds/off")          
+                send_request_to_server("/led/blue/on")
+                time.sleep(5)
         video_capture.release()
 
-def qr(frame):
-    global esp_last_state_qr_recognized
-    global esp_last_state_qr_detection
-    global current_user_id
-    user_id = 0
-
-    detected = False
-    decoded_objects = decode(frame)
-    for obj in decoded_objects:
-        detected = True
-        if obj.type == 'QRCODE':
-
-            qr_data = obj.data.decode('utf-8')
-
-            print('qr-detected')
-            if not esp_last_state_qr_detection:
-                send_request_to_server("/qr/detected")
-                esp_last_state_qr_detection = True
-           
-            try:
-                qr_object = json.loads(qr_data)
-                user_id = int(qr_object.get("id"))
-
-                if user_id is not None and check_user_exists(user_id):
-                    print('qr-recognized: ' + str(user_id))
-                    
-                    if current_user_id != user_id and not esp_last_state_qr_recognized:               
-                        send_request_to_server("/qr/recognized")
-                        time.sleep(5)
-                        esp_last_state_qr_recognized = True
-                        send_request_to_server("/leds/off")
-                        send_request_to_server("/qr/detected")
-
-                    current_user_id = user_id    
-                else:
-                    send_request_to_server("/qr/unrecognized")
-                    current_user_id = 0
-                
-                
-            except json.JSONDecodeError:
-                print("error-qr-decoding")
-
-            if current_user_id != user_id and esp_last_state_qr_recognized:
-                print("qr-unrecognized")
-                send_request_to_server("/qr/unrecognized")
-                esp_last_state_qr_recognized = False
-                
-    if current_user_id == 0 and not detected:
-        print('qr-undetected')        
-        if esp_last_state_qr_detection:
-            send_request_to_server("/qr/undetected")
-            esp_last_state_qr_detection = False
-
-
 def face(frame):
-    global video_capture
-    global current_user_id
-    global automatic_registration
-
+    global local
     global esp_last_state_face_unrecognized
     global esp_last_state_face_detection
-    global esp_last_state_door
 
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = face_classifier.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
@@ -146,27 +83,22 @@ def face(frame):
     if len(faces) == 0:
         print('face-undetected')
         if esp_last_state_face_detection:
-            send_request_to_server("/face/undetected")
+            send_request_to_server("/led/yellow/off")
             esp_last_state_face_detection = False
 
-    esp_last_state_door = False
     for (x, y, w, h) in faces:
+        registered = False
+
         print('face-detected')
+
         if not esp_last_state_face_detection:
-            send_request_to_server("/face/detected")
+            send_request_to_server("/led/yellow/on")
             esp_last_state_face_detection = True
             
         current_face = gray_frame[y:y+h, x:x+w]
 
-        if current_user_id == 0 : return False
-
-        if automatic_registration:
-            register_face(current_user_id,frame, x, y, w, h)
-            print('face-registered')
-            frame = video_capture.read()
-
         try:
-            response = requests.get(facialDataAccessLayerURL + f"faces?id={current_user_id}")
+            response = requests.get(facialDataAccessLayerURL + f"faces?local={local}")
             if response.status_code == 200:
                 face_data = response.json().get('faces', [])
                 for face in face_data:
@@ -176,15 +108,40 @@ def face(frame):
                         registered_face = np.array(face_img, dtype=np.uint8)
                         res = cv2.matchTemplate(current_face, registered_face, cv2.TM_CCOEFF_NORMED)
                         _, max_val, _, _ = cv2.minMaxLoc(res)
-                        if max_val > 0.7:
-                            print('face-recognized: ' + name)
-                            send_request_to_server("/face/recognized")
-                            return not automatic_registration
+                        if max_val > 0.7:           
+                            if registration_mode:
+                                esp_last_state_face_unrecognized = False
+                                register_face(current_user_id,frame, x, y, w, h)
+
+                                print('face-registered')
+
+                                send_request_to_server("/led/green/on")
+                                #time.sleep(0.5)
+                                send_request_to_server("/led/green/off")
+
+                                registered = True
+                                break
+                            else:
+                                print('face-recognized: ' + name)
+                                send_request_to_server("/led/green/on")
+                                return True
 
             if not esp_last_state_face_unrecognized:
-                send_request_to_server("/face/unrecognized")
+                send_request_to_server("/led/red/on")
                 esp_last_state_face_unrecognized = True
                 print('face-unrecognized')
+
+            current_user_id = 1 #check after
+            if registration_mode and not registered:
+                esp_last_state_face_unrecognized = False
+                register_face(current_user_id,frame, x, y, w, h)
+
+                print('face-registered')
+
+                send_request_to_server("/led/green/on")
+                #time.sleep(0.5)
+                send_request_to_server("/led/green/off")
+
         except Exception as e:
             print("An error occurred:", str(e))
     return False
@@ -253,8 +210,8 @@ def check_user_exists(user_id):
         return None
     
 def syncData():
-    global automatic_registration 
-    automatic_registration = get_esp_register_mode(8266)
+    global registration_mode 
+    registration_mode = get_esp_register_mode(8266)
     
 def run_syncData_repeatedly():
     timeout = 5

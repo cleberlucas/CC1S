@@ -19,85 +19,68 @@ const int D6 = 12;
 const int D7 = 13;
 const int D8 = 15;
 
-#define ledWhite   D0
-#define ledBlue   D5
-#define ledYellow   D6
+#define ledYellow   D0
+#define ledGreen   D6
 #define ledRed   D7
-#define ledGreen   D8
+#define ledBlue   D8
 
 void sendResponse() {
   server.send(200, "text/plain", "Request processed successfully.");
 }
 
-void handleDetectedFace() {
+void handleLedYellowOn() {
   digitalWrite(ledYellow, HIGH);
   sendResponse();
 }
 
-void handleUndetectedFace() {
+void handleLedYellowOff() {
   digitalWrite(ledYellow, LOW);
   sendResponse();
 }
 
-void handleRecognizedFace() {
+void handleLedGreenOn() {
   digitalWrite(ledGreen, HIGH);
-  digitalWrite(ledRed, LOW);
   sendResponse();
 }
 
-void handleUnrecognizedFace() {
+void handleLedGreenOff() {
   digitalWrite(ledGreen, LOW);
+  sendResponse();
+}
+
+void handleLedRedOn() {
   digitalWrite(ledRed, HIGH);
   sendResponse();
 }
 
-void handleRecognizedQr() {
-  digitalWrite(ledGreen, HIGH);
+void handleLedRedOff() {
   digitalWrite(ledRed, LOW);
   sendResponse();
 }
 
-void handleUnrecognizedQr() {
-  digitalWrite(ledGreen, LOW);
-  digitalWrite(ledRed, HIGH);
-  sendResponse();
-}
-
-void handleDetectedQr() {
+void handleLedBlueOn() {
   digitalWrite(ledBlue, HIGH);
   sendResponse();
 }
 
-void handleUndetectedQr() {
+void handleLedBlueOff() {
   digitalWrite(ledBlue, LOW);
-  sendResponse();
-}
-
-void handlerDoorOpen() {
-  digitalWrite(ledWhite, HIGH);
-  sendResponse();
-}
-
-void handlerDoorClose() {
-  digitalWrite(ledWhite, LOW);
   sendResponse();
 }
 
 void handleOffLeds() {
-  digitalWrite(ledWhite, LOW);
-  digitalWrite(ledBlue, LOW);
   digitalWrite(ledYellow, LOW);
-  digitalWrite(ledRed, LOW);
   digitalWrite(ledGreen, LOW);
+  digitalWrite(ledRed, LOW);
+  digitalWrite(ledBlue, LOW);
   sendResponse();
 }
 
 void handleOnLeds() {
-  digitalWrite(ledWhite, HIGH);
-  digitalWrite(ledBlue, HIGH);
   digitalWrite(ledYellow, HIGH);
-  digitalWrite(ledRed, HIGH);
   digitalWrite(ledGreen, HIGH);
+  digitalWrite(ledRed, HIGH);
+  digitalWrite(ledBlue, HIGH);
   sendResponse();
 }
 
@@ -124,7 +107,7 @@ void sendDataTodbApiUrl() {
 
     http.end();
   } else {
-    Serial.println("Error: not connected to WiFi network");
+    Serial.println("Not connected to WiFi network");
   }
 }
 
@@ -133,11 +116,10 @@ void setup() {
   delay(10);
   Serial.println('\n');
 
-  pinMode(ledWhite, OUTPUT);
-  pinMode(ledBlue, OUTPUT);
   pinMode(ledYellow, OUTPUT);
-  pinMode(ledRed, OUTPUT);
   pinMode(ledGreen, OUTPUT);
+  pinMode(ledRed, OUTPUT);
+  pinMode(ledBlue, OUTPUT);
 
   WiFi.begin(ssid, password);
   Serial.print("Connecting to ");
@@ -162,21 +144,20 @@ void setup() {
     server.send(200, "text/plain", "Hello! This is ESP8266 server.");
   });
 
-  server.on("/face/detected", HTTP_GET, handleDetectedFace);
-  server.on("/face/undetected", HTTP_GET, handleUndetectedFace);
-  server.on("/face/recognized", HTTP_GET, handleRecognizedFace);
-  server.on("/face/unrecognized", HTTP_GET, handleUnrecognizedFace);
+  server.on("/led/yellow/on", HTTP_GET, handleLedYellowOn);
+  server.on("/led/yellow/off", HTTP_GET, handleLedYellowOff);
 
-  server.on("/qr/detected", HTTP_GET, handleDetectedQr);
-  server.on("/qr/undetected", HTTP_GET, handleUndetectedQr);
-  server.on("/qr/recognized", HTTP_GET, handleRecognizedQr);
-  server.on("/qr/unrecognized", HTTP_GET, handleUnrecognizedQr);
+  server.on("/led/green/on", HTTP_GET, handleLedGreenOn);
+  server.on("/led/green/off", HTTP_GET, handleLedGreenOff);
 
-  server.on("/door/open", HTTP_GET, handlerDoorOpen);
-  server.on("/door/close", HTTP_GET, handlerDoorClose);
+  server.on("/led/red/on", HTTP_GET, handleLedRedOn);
+  server.on("/led/red/off", HTTP_GET, handleLedRedOff);
 
-  server.on("/leds/off", HTTP_GET, handleOffLeds);
+  server.on("/led/blue/on", HTTP_GET, handleLedBlueOn);
+  server.on("/led/blue/off", HTTP_GET, handleLedBlueOff);
+
   server.on("/leds/on", HTTP_GET, handleOnLeds);
+  server.on("/leds//off", HTTP_GET, handleOffLeds);
 
   server.begin();
 }
