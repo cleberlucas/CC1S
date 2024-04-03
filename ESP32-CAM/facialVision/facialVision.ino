@@ -35,24 +35,31 @@
 // ===========================
 // Enter your WiFi credentials
 // ===========================
-const char* ssid = "S20+";
-const char* password = "11111111";
-const char* dbApiUrl = "http://192.168.21.192:5000";
+const char* ssid = "";
+const char* password = "";
+
+// ===========================
+// Set server url facial-data-access-layer
+// ===========================
+const char* facialDataAccessLayerURL = "";
 
 WiFiClient client;
 
 void startCameraServer();
 void setupLedFlash(int pin);
 
-void sendDataToDbApiUrl() {
+void sendDataTofacialDataAccessLayerURL() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
 
-    String payload = "{\"id\": 32, \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\"}";
+    // ===========================
+    // Change the id:8266 and local:1 if necessary
+    // ===========================
+    String payload = "{\"id\": 32, \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\", \"local\": 1}";
 
     Serial.println("Enviando requisição para o servidor...");
 
-    http.begin(client, String(dbApiUrl) + "/esp/start");
+    http.begin(client, String(facialDataAccessLayerURL) + "/esp/start");
     http.addHeader("Content-Type", "application/json");
 
     int httpCode = http.POST(payload);
@@ -178,7 +185,7 @@ void setup() {
   Serial.print(WiFi.localIP());
   Serial.println("' to connect");
 
-  sendDataToDbApiUrl();
+  sendDataTofacialDataAccessLayerURL();
 }
 
 void loop() {

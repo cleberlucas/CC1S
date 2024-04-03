@@ -5,9 +5,16 @@
 WiFiClient client;
 ESP8266WebServer server(80);
 
-const char* ssid = "S20+";
-const char* password = "11111111";
-const char* dbApiUrl = "http://192.168.21.192:5000";
+// ===========================
+// Enter your WiFi credentials
+// ===========================
+const char* ssid = "";
+const char* password = "";
+
+// ===========================
+// Set server url facial-data-access-layer
+// ===========================
+const char* facialDataAccessLayerURL = "";
 
 const int D0 = 16;
 const int D1 = 5;
@@ -84,15 +91,18 @@ void handleOnLeds() {
   sendResponse();
 }
 
-void sendDataTodbApiUrl() {
+void sendDataTofacialDataAccessLayerURL() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
 
-    String payload = "{\"id\": 8266, \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\"}";
+    // ===========================
+    // Change the id:8266 and local:1 if necessary
+    // ===========================
+    String payload = "{\"id\": 8266, \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\", \"local\": 1}";
 
     Serial.println("Sending request to the server...");
 
-    http.begin(client, String(dbApiUrl) + "/esp/start");
+    http.begin(client, String(facialDataAccessLayerURL) + "/esp/start");
     http.addHeader("Content-Type", "application/json");
 
     int httpCode = http.POST(payload);
@@ -138,7 +148,7 @@ void setup() {
   Serial.print("IP Address:\t");
   Serial.println(WiFi.localIP());
 
-  sendDataTodbApiUrl();
+  sendDataTofacialDataAccessLayerURL();
 
   server.on("/", HTTP_GET, []() {
     server.send(200, "text/plain", "Hello! This is ESP8266 server.");
@@ -157,7 +167,7 @@ void setup() {
   server.on("/led/blue/off", HTTP_GET, handleLedBlueOff);
 
   server.on("/leds/on", HTTP_GET, handleOnLeds);
-  server.on("/leds//off", HTTP_GET, handleOffLeds);
+  server.on("/leds/off", HTTP_GET, handleOffLeds);
 
   server.begin();
 }

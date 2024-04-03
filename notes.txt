@@ -1,4 +1,0 @@
-qrcode json example:
-{
-    "id":1
-}

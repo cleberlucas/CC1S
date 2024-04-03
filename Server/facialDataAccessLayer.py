@@ -19,6 +19,7 @@ def send_ip():
         id = request.json['id']
         url = request.json['url']
         ssid = request.json['ssid']
+        local = request.json['local']
 
         if not id:
             return jsonify({'message': 'ID parameter is missing'}), 400
@@ -28,6 +29,9 @@ def send_ip():
         
         if not ssid:
             return jsonify({'message': 'Ssid parameter is missing'}), 400
+        
+        if not local:
+            return jsonify({'message': 'Local parameter is missing'}), 400
 
         db_config = config.get("db", {})
         db_connection = mysql.connector.connect(
@@ -40,7 +44,7 @@ def send_ip():
         if db_connection.is_connected():
             cursor = db_connection.cursor()
 
-            cursor.execute('''REPLACE INTO esp_info (id, url, ssid) VALUES (%s, %s, %s)''', (id, url, ssid))
+            cursor.execute('''REPLACE INTO esp_info (id, url, ssid,`local`) VALUES (%s, %s, %s, %s)''', (id, url, ssid, local))
             db_connection.commit()
             response = "Success"
 
@@ -142,7 +146,7 @@ def get_faces():
             cursor = db_connection.cursor()
 
             if local:
-                cursor.execute("SELECT u.`name`, u.id, f.face_img FROM facial_recognition f INNER JOIN user u ON f.user_id = u.id WHERE u.local = %s", (id,))
+                cursor.execute("SELECT u.`name`, u.id, f.face_img FROM facial_recognition f INNER JOIN user u ON f.user_id = u.id WHERE u.local = %s", (local,))
             else:
                 cursor.execute("SELECT u.`name`, u.id, f.face_img FROM facial_recognition f INNER JOIN user u ON f.user_id = u.id")
             
@@ -164,7 +168,7 @@ def get_faces():
     except mysql.connector.Error as err:
         return jsonify({'message': 'Error executing SQL query: ' + str(err)}), 500
 
-@app.route('/esp/register-mode', methods=['GET'])
+@app.route('/esp/user-id-register', methods=['GET'])
 def get_esp_register_mode():
     try:
         id = request.args.get('id')
@@ -181,13 +185,13 @@ def get_esp_register_mode():
 
         if db_connection.is_connected():
             cursor = db_connection.cursor()
-            cursor.execute("SELECT register_mode FROM esp_info WHERE id = %s", (id,))
+            cursor.execute("SELECT user_id_register FROM esp_info WHERE id = %s", (id,))
             register_mode = cursor.fetchone()
             cursor.close()
             db_connection.close()
 
             if register_mode is not None:
-                return jsonify({'register_mode': bool(register_mode[0])})
+                return jsonify({'user_id_register': register_mode[0]})
             else:
                 return jsonify({'message': 'User not found'}), 404
         else:

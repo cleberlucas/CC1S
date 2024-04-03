@@ -7,14 +7,18 @@ CREATE TABLE facial_recognition (
 
 CREATE TABLE `user` (
     id INT PRIMARY KEY,
-	`name` VARCHAR(255) NOT NULL
+	`name` VARCHAR(255) NOT NULL,
+    `local` INT NOT NULL
 );
 
 CREATE TABLE esp_info (
     id INT PRIMARY KEY,
     url VARCHAR(255) NOT NULL,
     ssid VARCHAR(255) NOT NULL,
+    `local` INT NOT NULL,
+    user_id_register INT NOT NULL DEFAULT 0,
     last_start DATETIME
+    #FOREIGN KEY (user_id_register) REFERENCES user(id)
 );
 
 CREATE TABLE unifran (
@@ -42,5 +46,3 @@ END;
 //
 
 DELIMITER ;
-
-
