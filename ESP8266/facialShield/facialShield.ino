@@ -102,7 +102,7 @@ void sendDataTofacialDataAccessLayerURL() {
 
     Serial.println("Sending request to the server...");
 
-    http.begin(client, String(facialDataAccessLayerURL) + "/esp/start");
+    http.begin(client, String(facialDataAccessLayerURL) + "/esp");
     http.addHeader("Content-Type", "application/json");
 
     int httpCode = http.POST(payload);

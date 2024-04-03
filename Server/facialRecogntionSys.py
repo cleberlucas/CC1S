@@ -139,7 +139,7 @@ def register_face(id, frame, x, y, w, h):
             'serialized_face': serialized_face_base64
         }
 
-        response = requests.post(facialDataAccessLayerURL + "register-face", json=data)
+        response = requests.post(facialDataAccessLayerURL + "face", json=data)
 
         if response.status_code == 200:
             print("Face registered successfully")
@@ -173,21 +173,6 @@ def send_request_to_server(route):
             print("Error sending request to:", route, response.status_code)
     except requests.RequestException as e:
         print("Error sending request to:", route, e)
-
-
-def check_user_exists(user_id):
-    try:
-        response = requests.get(f"{facialDataAccessLayerURL}user/exists?id={user_id}")
-        if response.status_code == 200:
-            data = response.json()
-            exists = data.get('exists')
-            return exists
-        else:
-            print(f"Failed to check user existence. Status code: {response.status_code}")
-            return None
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return None
     
 def syncData():
     global user_id_register 

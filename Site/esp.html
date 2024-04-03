@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User Registration</title>
+    <title>ESP User ID Register Update</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -61,20 +61,22 @@
     </style>
   </head>
   <body>
-    <h1>User Registration</h1>
-    <form id="registrationForm">
-      <label for="id">ID:</label><br />
+    <h1>ESP User ID Register Update</h1>
+    <form id="updateForm">
+      <label for="id">ESP ID:</label><br />
       <input type="text" id="id" name="id" /><br />
-      <label for="name">Name:</label><br />
-      <input type="text" id="name" name="name" /><br />
-      <label for="local">Local:</label><br />
-      <input type="text" id="local" name="local" /><br /><br />
-      <input type="submit" value="Register" />
+      <label for="user_id_register">User ID Register:</label><br />
+      <input
+        type="text"
+        id="user_id_register"
+        name="user_id_register"
+      /><br /><br />
+      <input type="submit" value="Update User ID Register" />
     </form>
 
     <script>
       document
-        .getElementById("registrationForm")
+        .getElementById("updateForm")
         .addEventListener("submit", function (event) {
           event.preventDefault();
           var formData = new FormData(this);
@@ -83,8 +85,8 @@
             jsonObject[key] = value;
           });
           var jsonPayload = JSON.stringify(jsonObject);
-          fetch("http://127.0.0.1:5000/user", {
-            method: "POST",
+          fetch("http://127.0.0.1:5000/esp/user-id-register", {
+            method: "PUT",
             headers: {
               "Content-Type": "application/json",
             },
@@ -97,7 +99,9 @@
             })
             .catch((error) => {
               console.error("Error:", error);
-              alert("An error occurred while registering the user");
+              alert(
+                "An error occurred while updating the user ID register for the ESP"
+              );
             });
         });
     </script>

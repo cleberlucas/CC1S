@@ -12,7 +12,43 @@ with open('config.json') as f:
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/esp/start', methods=['POST'])
+@app.route('/esp', methods=['GET'])
+def get_url_by_id_and_local():
+    try:
+        id = request.args.get('id')
+
+        if not id:
+            return jsonify({'message': 'ID parameter is missing'}), 400
+    
+        db_config = config.get("db", {})
+        db_connection = mysql.connector.connect(
+            host=db_config.get("host", "localhost"),
+            user=db_config.get("user", "root"),
+            password=db_config.get("password", ""),
+            database=db_config.get("database", "")
+        )
+
+        if db_connection.is_connected(): 
+            cursor = db_connection.cursor()
+
+            cursor.execute('''SELECT url, `local` FROM esp_info WHERE id = %s''', (id,))
+
+            esp_info = cursor.fetchone()
+
+            if esp_info:
+                return jsonify({'url': esp_info[0], 'local': esp_info[1]})
+            else:
+                return jsonify({'message': 'URL not found for the given ID'}), 404
+
+    except Error as e:
+        return jsonify({'message': 'An error occurred: ' + str(e)}), 500
+
+    finally:
+        if 'db_connection' in locals() and db_connection.is_connected():
+            cursor.close()
+            db_connection.close()
+
+@app.route('/esp', methods=['POST'])
 def send_ip():
     response = ""
     try:
@@ -58,14 +94,50 @@ def send_ip():
 
     return jsonify({'message': response})
 
-@app.route('/esp', methods=['GET'])
-def get_url_by_id_and_local():
+@app.route('/esp/user-id-register', methods=['GET'])
+def get_esp_register_mode():
     try:
         id = request.args.get('id')
+        if not id:
+            return jsonify({'message': 'ID parameter is missing'}), 400
+
+        db_config = config.get("db", {})
+        db_connection = mysql.connector.connect(
+            host=db_config.get("host", "localhost"),
+            user=db_config.get("user", "root"),
+            password=db_config.get("password", ""),
+            database=db_config.get("database", "")
+        )
+
+        if db_connection.is_connected():
+            cursor = db_connection.cursor()
+            cursor.execute("SELECT user_id_register FROM esp_info WHERE id = %s", (id,))
+            register_mode = cursor.fetchone()
+            cursor.close()
+            db_connection.close()
+
+            if register_mode is not None:
+                return jsonify({'user_id_register': register_mode[0]})
+            else:
+                return jsonify({'message': 'User not found'}), 404
+        else:
+            return jsonify({'message': 'Database connection failed'}), 500
+
+    except mysql.connector.Error as err:
+        return jsonify({'message': 'Error executing SQL query: ' + str(err)}), 500
+
+@app.route('/esp/user-id-register', methods=['PUT'])
+def update_esp_register_mode():
+    try:
+        id = request.json['id']
+        user_id_register = request.json['user_id_register']
 
         if not id:
             return jsonify({'message': 'ID parameter is missing'}), 400
-    
+
+        if not user_id_register:
+            return jsonify({'message': 'User ID Register parameter is missing'}), 400
+
         db_config = config.get("db", {})
         db_connection = mysql.connector.connect(
             host=db_config.get("host", "localhost"),
@@ -77,24 +149,21 @@ def get_url_by_id_and_local():
         if db_connection.is_connected():
             cursor = db_connection.cursor()
 
-            cursor.execute('''SELECT url, `local` FROM esp_info WHERE id = %s''', (id,))
+            cursor.execute("UPDATE esp_info SET user_id_register = %s WHERE id = %s", (user_id_register, id))
+            db_connection.commit()
 
-            esp_info = cursor.fetchone()
+            cursor.close()
+            db_connection.close()
 
-            if esp_info:
-                return jsonify({'url': esp_info[0], 'local': esp_info[1]})
-            else:
-                return jsonify({'message': 'URL not found for the given ID'}), 404
+            return jsonify({'message': 'User ID Register updated successfully'})
+        else:
+            return jsonify({'message': 'Database connection failed'}), 500
 
     except Error as e:
         return jsonify({'message': 'An error occurred: ' + str(e)}), 500
 
-    finally:
-        if 'db_connection' in locals() and db_connection.is_connected():
-            cursor.close()
-            db_connection.close()
 
-@app.route('/register-face', methods=['POST'])
+@app.route('/face', methods=['POST'])
 def register_face():
     try:
         id = request.json['id']
@@ -129,7 +198,7 @@ def register_face():
     except Error as e:
         return jsonify({'message': 'An error occurred: ' + str(e)}), 500
 
-@app.route('/faces', methods=['GET'])
+@app.route('/face', methods=['GET'])
 def get_faces():
     try:
         local = request.args.get('local')
@@ -168,39 +237,7 @@ def get_faces():
     except mysql.connector.Error as err:
         return jsonify({'message': 'Error executing SQL query: ' + str(err)}), 500
 
-@app.route('/esp/user-id-register', methods=['GET'])
-def get_esp_register_mode():
-    try:
-        id = request.args.get('id')
-        if not id:
-            return jsonify({'message': 'ID parameter is missing'}), 400
-
-        db_config = config.get("db", {})
-        db_connection = mysql.connector.connect(
-            host=db_config.get("host", "localhost"),
-            user=db_config.get("user", "root"),
-            password=db_config.get("password", ""),
-            database=db_config.get("database", "")
-        )
-
-        if db_connection.is_connected():
-            cursor = db_connection.cursor()
-            cursor.execute("SELECT user_id_register FROM esp_info WHERE id = %s", (id,))
-            register_mode = cursor.fetchone()
-            cursor.close()
-            db_connection.close()
-
-            if register_mode is not None:
-                return jsonify({'user_id_register': register_mode[0]})
-            else:
-                return jsonify({'message': 'User not found'}), 404
-        else:
-            return jsonify({'message': 'Database connection failed'}), 500
-
-    except mysql.connector.Error as err:
-        return jsonify({'message': 'Error executing SQL query: ' + str(err)}), 500
-
-@app.route('/register-user', methods=['POST'])
+@app.route('/user', methods=['POST'])
 def register_user():
     try:
         id = request.json['id']
