@@ -1,6 +1,8 @@
 #include "esp_camera.h"
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <WebServer.h>
+
 //
 // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
 //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
@@ -32,50 +34,133 @@
 //#define CAMERA_MODEL_DFRobot_Romeo_ESP32S3 // Has PSRAM
 #include "camera_pins.h"
 
-// ===========================
-// Enter your WiFi credentials
-// ===========================
-const char* ssid = "";
+WiFiClient client;
+WebServer server(88);
+
+// WiFi credentials
+const char* ssid = "":
 const char* password = "";
 
-// ===========================
-// Set server url facial-data-access-layer
-// ===========================
-const char* facialDataAccessLayerURL = "";
+// Server Facial Data Access Layer URL
+String serverURL = "";
 
-WiFiClient client;
+// Logs
+String logs = "";
+
+// ID and Location
+String deviceID = "";
+String deviceLocal = "";
 
 void startCameraServer();
 void setupLedFlash(int pin);
 
-void sendDataTofacialDataAccessLayerURL() {
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
+void handleStartMe() {
+  if (server.hasArg("url") && server.hasArg("id") && server.hasArg("local")) {
+    serverURL = server.arg("url");
+    deviceID = server.arg("id");
+    deviceLocal = server.arg("local");
 
-    // ===========================
-    // Change the id:8266 and local:1 if necessary
-    // ===========================
-    String payload = "{\"id\": 32, \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\", \"local\": 1}";
+    if (WiFi.status() == WL_CONNECTED) {
+      HTTPClient http;
+      String payload = "{\"id\": " + deviceID + ", \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\", \"local\": " + deviceLocal + "}";
 
-    Serial.println("Enviando requisição para o servidor...");
+      updateLog("Starting ...");
 
-    http.begin(client, String(facialDataAccessLayerURL) + "/esp");
-    http.addHeader("Content-Type", "application/json");
+      http.begin(client, String(serverURL) + "/esp");
+      http.addHeader("Content-Type", "application/json");
 
-    int httpCode = http.POST(payload);
+      int httpCode = http.POST(payload);
 
-    if (httpCode > 0) {
-      String response = http.getString();
-      Serial.println("Resposta do servidor: " + response);
+      if (httpCode > 0) {
+        String response = http.getString();
+        updateLog("Server response: " + response);
+      } else {
+        updateLog("Error sending request to the server");
+        updateLog(http.errorToString(httpCode));
+      }
+
+      http.end();
     } else {
-      Serial.println("Erro ao enviar requisição para o servidor");
-      Serial.println(http.errorToString(httpCode));
+      updateLog("Not connected to WiFi network");
     }
-
-    http.end();
   } else {
-    Serial.println("Erro: não conectado à rede WiFi");
+    updateLog("Missing parameters in the request.");
   }
+
+  sendLogs();
+}
+
+
+void handleConfiguration() {
+  String htmlResponse = "<!DOCTYPE html>\
+  <html>\
+  <head>\
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\
+    <style>\
+      body { font-family: Arial, Helvetica, sans-serif; }\
+      input[type=text], input[type=submit] {\
+        width: 100%;\
+        padding: 12px;\
+        border: 1px solid #ccc;\
+        border-radius: 4px;\
+        box-sizing: border-box;\
+        margin-top: 6px;\
+        margin-bottom: 16px;\
+      }\
+      input[type=submit] {\
+        background-color: #4CAF50;\
+        color: white;\
+        padding: 14px 20px;\
+        border: none;\
+        border-radius: 4px;\
+        cursor: pointer;\
+      }\
+      input[type=submit]:hover {\
+        background-color: #45a049;\
+      }\
+      #logs {\
+        padding: 10px;\
+        border: 1px solid #ccc;\
+        border-radius: 4px;\
+        background-color: #f2f2f2;\
+      }\
+    </style>\
+  </head>\
+  <body>\
+    <form action='/start-me' id='configForm' method='POST'>\
+      <label for='url'>Server URL:</label><br>\
+      <input type='text' id='url' name='url' value='" + serverURL + "'><br><br>\
+      <label for='id'>Device ID:</label><br>\
+      <input type='text' id='id' name='id' value='" + deviceID + "'><br><br>\
+      <label for='local'>Device Location:</label><br>\
+      <input type='text' id='local' name='local' value='" + deviceLocal + "'><br><br>\
+      <input type='submit' value='Submit'>\
+    </form>\
+    <div id='logs'>" + logs + "</div>\
+    <script>\
+      function updateLogs() {\
+        var logsDiv = document.getElementById('logs');\
+        logsDiv.innerHTML = '" + logs + "';\
+      }\
+      setInterval(updateLogs, 1000);\
+    </script>\
+  </body>\
+  </html>";
+
+  server.send(200, "text/html", htmlResponse);
+}
+
+void sendResponse(String message) {
+  server.send(200, "text/plain", message);
+  updateLog(message);
+}
+
+void sendLogs() {
+  server.send(200, "text/plain", logs);
+}
+
+void updateLog(String log){
+    logs += log + "<br>";
 }
 
 void setup() {
@@ -170,25 +255,32 @@ void setup() {
 #endif
 
   WiFi.begin(ssid, password);
-  WiFi.setSleep(false);
+  Serial.print("Connecting to ");
+  Serial.print(ssid); 
+  Serial.println(" ...");
 
+  int i = 0;
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+    delay(1000);
+    Serial.print(++i); 
+    Serial.print(' ');
   }
-  Serial.println("");
-  Serial.println("WiFi connected");
 
-  startCameraServer();
-  
+  Serial.println('\n');
+  Serial.println("Connection established!");  
   Serial.print("Camera Ready! Use 'http://");
   Serial.print(WiFi.localIP());
   Serial.println("' to connect");
 
-  sendDataTofacialDataAccessLayerURL();
+  server.on("/configuration", HTTP_GET, handleConfiguration);
+
+  server.on("/start-me", HTTP_POST, handleStartMe);
+
+  server.begin();
+
+  startCameraServer();
 }
 
 void loop() {
-  // Do nothing. Everything is done in another task by the web server
-  delay(10000);
+  server.handleClient();
 }

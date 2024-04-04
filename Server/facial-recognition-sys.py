@@ -7,18 +7,19 @@ import base64
 import numpy as np
 import threading
 
-face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+serverURL =  "http://127.0.0.1:5000/"
 
 local = None
-video_url = ""
-facialDataAccessLayerURL =  "http://127.0.0.1:5000/"
+video_url = None
+face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+
 
 esp_32_url_info = "http://"
 esp_32_id_info=int(input("set ESP32 to init:<id> "))
-response = requests.get(facialDataAccessLayerURL + f"esp?id={esp_32_id_info}")
+response = requests.get(serverURL + f"esp?id={esp_32_id_info}")
 if response.status_code == 200:
     esp_32_url_info = esp_32_url_info + response.json()['url']
-    video_url = esp_32_url_info + ":81/stream"
+    video_url = esp_32_url_info  + ":81/stream"
     local = response.json()['local']
 
     print("esp-32-url: " + esp_32_url_info)
@@ -30,9 +31,9 @@ else:
 
 esp_8266_url_info = "http://"
 esp8266_id_info=int(input("set ESP8266 to init:<id> "))
-response = requests.get(facialDataAccessLayerURL + f"esp?id={esp8266_id_info}")
+response = requests.get(serverURL + f"esp?id={esp8266_id_info}")
 if response.status_code == 200:
-    esp_8266_url_info = esp_8266_url_info + response.json()['url']
+    esp_8266_url_info = esp_8266_url_info + response.json()['url'] + ":88"
     
     print("esp-8266-url: " + esp_8266_url_info)
     if not local: 
@@ -91,7 +92,7 @@ def face(frame):
         current_face = gray_frame[y:y+h, x:x+w]
 
         try:
-            response = requests.get(facialDataAccessLayerURL + f"faces?local={local}")
+            response = requests.get(serverURL + f"face?local={local}")
             if response.status_code == 200:
                 face_data = response.json().get('faces', [])
                 for face in face_data:
@@ -139,7 +140,7 @@ def register_face(id, frame, x, y, w, h):
             'serialized_face': serialized_face_base64
         }
 
-        response = requests.post(facialDataAccessLayerURL + "face", json=data)
+        response = requests.post(serverURL + "face", json=data)
 
         if response.status_code == 200:
             print("Face registered successfully")
@@ -151,7 +152,7 @@ def register_face(id, frame, x, y, w, h):
 
 def get_esp_user_id_register(esp_id):
     try:
-        response = requests.get(f"{facialDataAccessLayerURL}esp/user-id-register?id={esp_id}")
+        response = requests.get(f"{serverURL}esp/user-id-register?id={esp_id}")
         if response.status_code == 200:
             data = response.json()
             user_id_register = data.get('user_id_register')

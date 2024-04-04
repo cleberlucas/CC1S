@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ESP LED Control</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin: 10%;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .button {
+        margin: 0 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .yellow {
+        background-color: yellow;
+      }
+
+      .green {
+        background-color: green;
+        color: white;
+      }
+
+      .red {
+        background-color: red;
+        color: white;
+      }
+
+      .blue {
+        background-color: blue;
+        color: white;
+      }
+
+      .gray {
+        background-color: gray;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ESP LED Control</h1>
+    <div id="id-input">
+      <label for="esp-id">Enter ESP ID:</label>
+      <input type="text" id="esp-id" name="esp-id" />
+      <button onclick="submitId()">Submit</button>
+    </div>
+    <div id="led-controls" style="display: none">
+      <div class="button-container">
+        <button class="button blue" onclick="toggleLed('/led/blue/on')">
+          Turn Blue LED On
+        </button>
+        <button class="button blue" onclick="toggleLed('/led/blue/off')">
+          Turn Blue LED Off
+        </button>
+      </div>
+      <div class="button-container">
+        <button class="button green" onclick="toggleLed('/led/green/on')">
+          Turn Green LED On
+        </button>
+        <button class="button green" onclick="toggleLed('/led/green/off')">
+          Turn Green LED Off
+        </button>
+      </div>
+      <div class="button-container">
+        <button class="button red" onclick="toggleLed('/led/red/on')">
+          Turn Red LED On
+        </button>
+        <button class="button red" onclick="toggleLed('/led/red/off')">
+          Turn Red LED Off
+        </button>
+      </div>
+      <div class="button-container">
+        <button class="button yellow" onclick="toggleLed('/led/yellow/on')">
+          Turn Yellow LED On
+        </button>
+        <button class="button yellow" onclick="toggleLed('/led/yellow/off')">
+          Turn Yellow LED Off
+        </button>
+      </div>
+      <div class="button-container">
+        <button class="button gray" onclick="toggleLed('/leds/on')">
+          Turn All LEDs On
+        </button>
+        <button class="button gray" onclick="toggleLed('/leds/off')">
+          Turn All LEDs Off
+        </button>
+      </div>
+    </div>
+
+    <script>
+      function submitId() {
+        var espId = document.getElementById("esp-id").value;
+        if (espId.trim() !== "") {
+          getESPUrl(espId);
+          document.getElementById("id-input").style.display = "none";
+          document.getElementById("led-controls").style.display = "block";
+        } else {
+          alert("Please enter the ESP ID");
+        }
+      }
+
+      function getESPUrl(id) {
+        fetch("http://127.0.0.1:5000/esp?id=" + id)
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Failed to get ESP URL");
+            }
+          })
+          .then((data) => {
+            if (data.url) {
+              console.log("ESP URL:", data.url);
+              controlLEDs(data.url);
+            } else {
+              throw new Error("ESP URL not found");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while getting the ESP URL");
+          });
+      }
+
+      function controlLEDs(url) {
+        window.toggleLed = function (endpoint) {
+          fetch("http://" + url + ":88" + endpoint, {
+            method: "GET",
+          })
+            .then((response) => {
+              if (response.ok) {
+                console.log("Success");
+              } else {
+                throw new Error("Failed to toggle LED");
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              //alert("An error occurred while toggling the LED");
+            });
+        };
+      }
+    </script>
+  </body>
+</html>

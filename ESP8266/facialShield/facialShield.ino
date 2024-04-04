@@ -3,19 +3,23 @@
 #include <ESP8266WebServer.h>
 
 WiFiClient client;
-ESP8266WebServer server(80);
+ESP8266WebServer server(88);
 
-// ===========================
-// Enter your WiFi credentials
-// ===========================
+// WiFi credentials
 const char* ssid = "";
 const char* password = "";
 
-// ===========================
-// Set server url facial-data-access-layer
-// ===========================
-const char* facialDataAccessLayerURL = "";
+// Server Facial Data Access Layer URL
+String serverURL = "";
 
+// Logs
+String logs = "";
+
+// ID and Location
+String deviceID = "";
+String deviceLocal = "";
+
+// GPIO Pins
 const int D0 = 16;
 const int D1 = 5;
 const int D2 = 4;
@@ -27,52 +31,48 @@ const int D7 = 13;
 const int D8 = 15;
 
 #define ledYellow   D0
-#define ledGreen   D6
-#define ledRed   D7
+#define ledRed   D6
+#define ledGreen   D7
 #define ledBlue   D8
-
-void sendResponse() {
-  server.send(200, "text/plain", "Request processed successfully.");
-}
 
 void handleLedYellowOn() {
   digitalWrite(ledYellow, HIGH);
-  sendResponse();
+  sendResponse("LED Yellow turned on.");
 }
 
 void handleLedYellowOff() {
   digitalWrite(ledYellow, LOW);
-  sendResponse();
+  sendResponse("LED Yellow turned off.");
 }
 
 void handleLedGreenOn() {
   digitalWrite(ledGreen, HIGH);
-  sendResponse();
+  sendResponse("LED Green turned on.");
 }
 
 void handleLedGreenOff() {
   digitalWrite(ledGreen, LOW);
-  sendResponse();
+  sendResponse("LED Green turned off.");
 }
 
 void handleLedRedOn() {
   digitalWrite(ledRed, HIGH);
-  sendResponse();
+  sendResponse("LED Red turned on.");
 }
 
 void handleLedRedOff() {
   digitalWrite(ledRed, LOW);
-  sendResponse();
+  sendResponse("LED Red turned off.");
 }
 
 void handleLedBlueOn() {
   digitalWrite(ledBlue, HIGH);
-  sendResponse();
+  sendResponse("LED Blue turned on.");
 }
 
 void handleLedBlueOff() {
   digitalWrite(ledBlue, LOW);
-  sendResponse();
+  sendResponse("LED Blue turned off.");
 }
 
 void handleOffLeds() {
@@ -80,7 +80,7 @@ void handleOffLeds() {
   digitalWrite(ledGreen, LOW);
   digitalWrite(ledRed, LOW);
   digitalWrite(ledBlue, LOW);
-  sendResponse();
+  sendResponse("All LEDs turned off.");
 }
 
 void handleOnLeds() {
@@ -88,43 +88,121 @@ void handleOnLeds() {
   digitalWrite(ledGreen, HIGH);
   digitalWrite(ledRed, HIGH);
   digitalWrite(ledBlue, HIGH);
-  sendResponse();
+  sendResponse("All LEDs turned on.");
 }
 
-void sendDataTofacialDataAccessLayerURL() {
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
+void handleStartMe() {
+  if (server.hasArg("url") && server.hasArg("id") && server.hasArg("local")) {
+    serverURL = server.arg("url");
+    deviceID = server.arg("id");
+    deviceLocal = server.arg("local");
 
-    // ===========================
-    // Change the id:8266 and local:1 if necessary
-    // ===========================
-    String payload = "{\"id\": 8266, \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\", \"local\": 1}";
+    if (WiFi.status() == WL_CONNECTED) {
+      HTTPClient http;
+      String payload = "{\"id\": " + deviceID + ", \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\", \"local\": " + deviceLocal + "}";
 
-    Serial.println("Sending request to the server...");
+      updateLog("Starting ...");
 
-    http.begin(client, String(facialDataAccessLayerURL) + "/esp");
-    http.addHeader("Content-Type", "application/json");
+      http.begin(client, String(serverURL) + "/esp");
+      http.addHeader("Content-Type", "application/json");
 
-    int httpCode = http.POST(payload);
+      int httpCode = http.POST(payload);
 
-    if (httpCode > 0) {
-      String response = http.getString();
-      Serial.println("Server response: " + response);
+      if (httpCode > 0) {
+        String response = http.getString();
+        updateLog("Server response: " + response);
+      } else {
+        updateLog("Error sending request to the server");
+        updateLog(http.errorToString(httpCode));
+      }
+
+      http.end();
     } else {
-      Serial.println("Error sending request to the server");
-      Serial.println(http.errorToString(httpCode));
+      updateLog("Not connected to WiFi network");
     }
-
-    http.end();
   } else {
-    Serial.println("Not connected to WiFi network");
+    updateLog("Missing parameters in the request.");
   }
+
+  sendLogs();
+}
+
+void handleConfiguration() {
+  String htmlResponse = "<!DOCTYPE html>\
+  <html>\
+  <head>\
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\
+    <style>\
+      body { font-family: Arial, Helvetica, sans-serif; }\
+      input[type=text], input[type=submit] {\
+        width: 100%;\
+        padding: 12px;\
+        border: 1px solid #ccc;\
+        border-radius: 4px;\
+        box-sizing: border-box;\
+        margin-top: 6px;\
+        margin-bottom: 16px;\
+      }\
+      input[type=submit] {\
+        background-color: #4CAF50;\
+        color: white;\
+        padding: 14px 20px;\
+        border: none;\
+        border-radius: 4px;\
+        cursor: pointer;\
+      }\
+      input[type=submit]:hover {\
+        background-color: #45a049;\
+      }\
+      #logs {\
+        padding: 10px;\
+        border: 1px solid #ccc;\
+        border-radius: 4px;\
+        background-color: #f2f2f2;\
+      }\
+    </style>\
+  </head>\
+  <body>\
+    <form action='/start-me' id='configForm' method='POST'>\
+      <label for='url'>Server URL:</label><br>\
+      <input type='text' id='url' name='url' value='" + serverURL + "'><br><br>\
+      <label for='id'>Device ID:</label><br>\
+      <input type='text' id='id' name='id' value='" + deviceID + "'><br><br>\
+      <label for='local'>Device Location:</label><br>\
+      <input type='text' id='local' name='local' value='" + deviceLocal + "'><br><br>\
+      <input type='submit' value='Submit'>\
+    </form>\
+    <div id='logs'>" + logs + "</div>\
+    <script>\
+      function updateLogs() {\
+        var logsDiv = document.getElementById('logs');\
+        logsDiv.innerHTML = '" + logs + "';\
+      }\
+      setInterval(updateLogs, 1000);\
+    </script>\
+  </body>\
+  </html>";
+
+  server.send(200, "text/html", htmlResponse);
+}
+
+void sendResponse(String message) {
+  server.send(200, "text/plain", message);
+  updateLog(message);
+}
+
+void sendLogs() {
+  server.send(200, "text/plain", logs);
+}
+
+void updateLog(String log){
+    logs += log + "<br>";
 }
 
 void setup() {
   Serial.begin(115200);
-  delay(10);
-  Serial.println('\n');
+  Serial.setDebugOutput(true);
+  Serial.println();
 
   pinMode(ledYellow, OUTPUT);
   pinMode(ledGreen, OUTPUT);
@@ -148,11 +226,9 @@ void setup() {
   Serial.print("IP Address:\t");
   Serial.println(WiFi.localIP());
 
-  sendDataTofacialDataAccessLayerURL();
+  server.on("/configuration", HTTP_GET, handleConfiguration);
 
-  server.on("/", HTTP_GET, []() {
-    server.send(200, "text/plain", "Hello! This is ESP8266 server.");
-  });
+  server.on("/start-me", HTTP_POST, handleStartMe);
 
   server.on("/led/yellow/on", HTTP_GET, handleLedYellowOn);
   server.on("/led/yellow/off", HTTP_GET, handleLedYellowOff);
@@ -169,9 +245,17 @@ void setup() {
   server.on("/leds/on", HTTP_GET, handleOnLeds);
   server.on("/leds/off", HTTP_GET, handleOffLeds);
 
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+
   server.begin();
 }
 
 void loop() {
   server.handleClient();
+
+  while (Serial.available()) {
+    char c = Serial.read();
+    updateLog(String(c));
+      sendLogs();
+  }
 }
