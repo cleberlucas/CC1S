@@ -9,8 +9,9 @@
         font-family: "Roboto", sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #0f0f0f;
-        color: #fff;
+        background-color: #1a1a1a;
+        color: #ccc;
+        transition: background-color 0.5s, color 0.5s;
       }
 
       .container {
@@ -18,91 +19,137 @@
       }
 
       h1 {
-        font-size: 2.5em;
+        font-size: 2em;
         color: #ff6600;
         margin-bottom: 20px;
         text-align: center;
       }
 
       p {
-        font-size: 1.1em;
+        font-size: 1em;
         color: #ccc;
         margin-bottom: 20px;
         text-align: center;
       }
 
-      .topics {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .topic {
-        width: 80%;
-        background-color: #1a1a1a;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);
-        text-align: left;
-      }
-
-      .topic h2 {
+      a {
         color: #ff6600;
-        font-size: 1.3em;
-        margin-bottom: 10px;
-      }
-
-      .topic p {
-        color: #ccc;
       }
 
       footer {
-        background-color: #1a1a1a;
+        background-color: #333;
         color: #ccc;
         padding: 20px 0;
         text-align: center;
       }
 
       footer p {
-        margin: 0;
+        margin-bottom: 200px;
       }
 
       .contact-info {
-        background-color: #333;
+        background-color: rgba(51, 51, 51, 0.95);
         color: #ccc;
-        padding: 20px 0;
+        padding: 10px;
         text-align: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
       }
 
-      .contact-info p {
-        margin: 0;
-      }
-
-      .founders {
-        background-color: #1a1a1a;
-        padding: 20px 0;
-        text-align: center;
-      }
-
-      .founder {
+      .cost-plan {
+        background-color: #333;
+        padding: 5px;
+        border-radius: 5px;
+        margin-top: 10px;
         display: inline-block;
-        width: 20%;
-        margin: 10px auto;
+        margin-right: 5px;
+        color: #fff;
+      }
+
+      .topics,
+      .in-topics {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .topic,
+      .in-topic {
+        background-color: #1a1a1a;
+        border-radius: 15px;
         padding: 20px;
-        background-color: #333;
-        border-radius: 10px;
+        margin: 20px 0;
         box-shadow: 0 0 10px rgba(255, 102, 0, 0.3);
+        text-align: justify;
+      }
+
+      .topic h2,
+      .in-topic h2 {
+        color: #ff6600;
+        font-size: 1.2em;
+        margin-bottom: 10px;
         text-align: center;
       }
 
-      .founder h3 {
-        color: #ff6600;
+      .topic p,
+      .in-topic p {
+        color: #ccc;
         margin-bottom: 10px;
+        text-align: left;
       }
 
-      .founder p {
-        color: #ccc;
+      .topic img,
+      .in-topic img {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+        border-radius: 10px;
+      }
+
+      .topics::-webkit-scrollbar,
+      .in-topics::-webkit-scrollbar,
+      .topic::-webkit-scrollbar,
+      .in-topic::-webkit-scrollbar {
+        display: none;
+      }
+
+      .topic:nth-child(1) {
+        background-image: url("https://via.placeholder.com/250");
+        background-size: cover;
+        background-position: center;
+        height: 300px;
+      }
+
+      .in-topic:nth-child(1) {
+        background-image: url("https://via.placeholder.com/250");
+        background-size: cover;
+        background-position: center;
+        height: 300px;
+      }
+
+      .in-topic:nth-child(2) {
+        background-image: url("https://via.placeholder.com/300");
+        background-size: cover;
+        background-position: center;
+        height: 300px;
+      }
+
+      .in-topic:nth-child(3) {
+        background-image: url("https://via.placeholder.com/350");
+        background-size: cover;
+        background-position: center;
+        height: 300px;
+      }
+
+      @media only screen and (min-width: 768px) {
+        .in-topics {
+          flex-direction: row;
+        }
+        .in-topic {
+          flex: 0 0 30%;
+          margin: 20px 10px;
+        }
       }
     </style>
   </head>
@@ -116,21 +163,41 @@
 
       <div class="topics">
         <div class="topic">
-          <h2>O que propomos?</h2>
-          <p>
+          <h2>
             Exploramos métodos de controle de acesso, focando no desenvolvimento
             de um dispositivo biométrico facial para controle de presença em
             universidades.
-          </p>
+          </h2>
+        </div>
+
+        <div class="in-topics">
+          <div class="in-topic">
+            <h2>Maior controle e segurança do ambiente</h2>
+          </div>
+
+          <div class="in-topic">
+            <h2>Facilidade na chamada de presença</h2>
+          </div>
+
+          <div class="in-topic">
+            <h2>Melhoria na gestão de presença</h2>
+          </div>
         </div>
 
         <div class="topic">
-          <h2>Quais vantagens?</h2>
-          <ul>
-            <li>Maior controle e segurança do ambiente.</li>
-            <li>Facilidade na chamada de presença.</li>
-            <li>Melhoria na gestão de presença.</li>
-          </ul>
+          <h2>Plano de Valores</h2>
+          <p>
+            Oferecemos diferentes opções de planos para atender às necessidades
+            de sua universidade.
+          </p>
+          <div class="cost-plan">Plano de Teste: R$00,00/ 1° mês</div>
+          <div class="cost-plan">Plano Mensal: R$XX/mês</div>
+          <div class="cost-plan">Plano Anual: R$XXX/ano (economize XX%)</div>
+          <p>
+            Entre em contato conosco para personalizar um plano que atenda
+            melhor às suas necessidades e para discutir opções de pagamento e
+            financiamento.
+          </p>
         </div>
       </div>
     </div>
@@ -142,28 +209,24 @@
     </footer>
 
     <div class="contact-info">
-      <div class="container">
-        <h2>Entre em Contato</h2>
-        <p>Endereço: Rua XXXX, 123 - XXXXX XX XXXX</p>
-        <p>Telefone: (99) 9999-9999</p>
-      </div>
-    </div>
-
-    <div class="founders">
-      <div class="container">
-        <h2>Fundadores do Projeto</h2>
-        <div class="founder">
-          <h3>NOME</h3>
-          <p>CARGO</p>
-        </div>
-        <div class="founder">
-          <h3>NOME</h3>
-          <p>CARGO</p>
-        </div>
-        <div class="founder">
-          <h3>NOME</h3>
-          <p>CARGO</p>
-        </div>
+      <div class="container center">
+        <p>
+          <a href="https://wa.me/11998877665" target="_blank">
+            <img
+              width="40"
+              height="40"
+              src="https://img.icons8.com/color/100/whatsapp--v1.png"
+              alt="whatsapp--v1"
+            />
+          </a>
+          <div>
+            Telefone Fixo:
+            <a href="https://wa.me/11998877665" target="_blank"
+            >35 3531-0000</a
+          >
+          </div>     
+        </p>
+        <p>Endereço: Rua XXXXX, 0, Bairro XXXXX, Cidade XXXXX XXXXX XXX</p>
       </div>
     </div>
   </body>
