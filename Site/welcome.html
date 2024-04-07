@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bem-vindo à XPTO</title>
+
     <style>
       body {
         font-family: "Roboto", sans-serif;
@@ -22,6 +23,13 @@
         font-size: 2em;
         color: #ff6600;
         margin-bottom: 20px;
+        text-align: center;
+      }
+
+      h2 {
+        font-size: 1.2em;
+        color: #ff6600;
+        margin-bottom: 10px;
         text-align: center;
       }
 
@@ -74,8 +82,11 @@
         flex-direction: column;
       }
 
-      .topic,
-      .in-topic {
+      .in-topics {
+        justify-content: space-between;
+      }
+
+      .topic {
         background-color: #1a1a1a;
         border-radius: 15px;
         padding: 20px;
@@ -84,27 +95,15 @@
         text-align: justify;
       }
 
-      .topic h2,
-      .in-topic h2 {
-        color: #ff6600;
-        font-size: 1.2em;
-        margin-bottom: 10px;
-        text-align: center;
-      }
-
-      .topic p,
-      .in-topic p {
-        color: #ccc;
-        margin-bottom: 10px;
-        text-align: left;
+      .in-topic {
+        background-color: #1a1a1a;
+        border-radius: 15px;
+        padding: 23px;
       }
 
       .topic img,
-      .in-topic img {
-        max-width: 100%;
-        height: auto;
-        margin-bottom: 10px;
-        border-radius: 10px;
+      .in-topic {
+        box-shadow: 0 2px 4px rgba(255, 102, 0, 0.3);
       }
 
       .topics::-webkit-scrollbar,
@@ -114,32 +113,41 @@
         display: none;
       }
 
-      .topic:nth-child(1) {
-        background-image: url("https://via.placeholder.com/250");
+      .topic-1 {
+        background-image: url("4.jpg");
         background-size: cover;
         background-position: center;
-        height: 300px;
+        height: 350px;
       }
 
-      .in-topic:nth-child(1) {
-        background-image: url("https://via.placeholder.com/250");
-        background-size: cover;
+      .in-topic-1 {
+        background-image: url("1.gif");
+        background-size: contain;
+        background-color: white;
         background-position: center;
-        height: 300px;
+        background-repeat: no-repeat;
+        height: 50px;
+        width: 400px;
       }
 
-      .in-topic:nth-child(2) {
-        background-image: url("https://via.placeholder.com/300");
-        background-size: cover;
+      .in-topic-2 {
+        background-image: url("2.gif");
+        background-size: contain;
+        background-color: white;
         background-position: center;
-        height: 300px;
+        background-repeat: no-repeat;
+        height: 50px;
+        width: 400px;
       }
 
-      .in-topic:nth-child(3) {
-        background-image: url("https://via.placeholder.com/350");
-        background-size: cover;
+      .in-topic-3 {
+        background-image: url("3.gif");
+        background-size: contain;
+        background-color: white;
         background-position: center;
-        height: 300px;
+        background-repeat: no-repeat;
+        height: 50px;
+        width: 400px;
       }
 
       @media only screen and (min-width: 768px) {
@@ -162,25 +170,29 @@
       </p>
 
       <div class="topics">
-        <div class="topic">
+        <div>
           <h2>
             Exploramos métodos de controle de acesso, focando no desenvolvimento
             de um dispositivo biométrico facial para controle de presença em
             universidades.
           </h2>
+          <div class="topic topic-1"></div>
         </div>
 
         <div class="in-topics">
-          <div class="in-topic">
+          <div>
             <h2>Maior controle e segurança do ambiente</h2>
+            <div class="in-topic in-topic-1"></div>
           </div>
 
-          <div class="in-topic">
+          <div>
             <h2>Facilidade na chamada de presença</h2>
+            <div class="in-topic in-topic-2"></div>
           </div>
 
-          <div class="in-topic">
-            <h2>Melhoria na gestão de presença</h2>
+          <div>
+            <h2>Melhora na gestão de presença</h2>
+            <div class="in-topic in-topic-3"></div>
           </div>
         </div>
 
@@ -219,12 +231,12 @@
               alt="whatsapp--v1"
             />
           </a>
-          <div>
+          <span>
             Telefone Fixo:
             <a href="https://wa.me/11998877665" target="_blank"
-            >35 3531-0000</a
+              >35 3531-0000</a
+            ></span
           >
-          </div>     
         </p>
         <p>Endereço: Rua XXXXX, 0, Bairro XXXXX, Cidade XXXXX XXXXX XXX</p>
       </div>
