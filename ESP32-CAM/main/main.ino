@@ -37,36 +37,29 @@
 WiFiClient client;
 WebServer server(88);
 
-// WiFi credentials
-const char* ssid = "":
+// **SET*** WiFi credentials
+const char* ssid = "";
 const char* password = "";
 
-// Server Facial Data Access Layer URL
-String serverURL = "";
-
-// Logs
 String logs = "";
-
-// ID and Location
-String deviceID = "";
-String deviceLocal = "";
 
 void startCameraServer();
 void setupLedFlash(int pin);
 
 void handleStartMe() {
-  if (server.hasArg("url") && server.hasArg("id") && server.hasArg("local")) {
-    serverURL = server.arg("url");
-    deviceID = server.arg("id");
-    deviceLocal = server.arg("local");
+  if (server.hasArg("url") && server.hasArg("id") && server.hasArg("local") && server.hasArg("door")) {
+    String url = server.arg("url");
+    String id = server.arg("id");
+    String local = server.arg("local");
+    String door = server.arg("door");
 
     if (WiFi.status() == WL_CONNECTED) {
       HTTPClient http;
-      String payload = "{\"id\": " + deviceID + ", \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\", \"local\": " + deviceLocal + "}";
+      String payload = "{\"id\": " + id + ", \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\", \"local\": " + local + ", \"mac\": \"" + WiFi.macAddress()+ "\", \"door\": \"" + door + "\"}";
 
       updateLog("Starting ...");
 
-      http.begin(client, String(serverURL) + "/esp");
+      http.begin(client, String(url) + "/esp");
       http.addHeader("Content-Type", "application/json");
 
       int httpCode = http.POST(payload);
@@ -90,7 +83,6 @@ void handleStartMe() {
   sendLogs();
 }
 
-
 void handleConfiguration() {
   String htmlResponse = "<!DOCTYPE html>\
   <html>\
@@ -98,7 +90,7 @@ void handleConfiguration() {
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\
     <style>\
       body { font-family: Arial, Helvetica, sans-serif; }\
-      input[type=text], input[type=submit] {\
+      input[type=text], input[type=submit], select {\
         width: 100%;\
         padding: 12px;\
         border: 1px solid #ccc;\
@@ -128,12 +120,17 @@ void handleConfiguration() {
   </head>\
   <body>\
     <form action='/start-me' id='configForm' method='POST'>\
-      <label for='url'>Server URL:</label><br>\
-      <input type='text' id='url' name='url' value='" + serverURL + "'><br><br>\
+      <label for='url'>Data Access Server URL:</label><br>\
+      <input type='text' id='url' name='url' value=''><br><br>\
       <label for='id'>Device ID:</label><br>\
-      <input type='text' id='id' name='id' value='" + deviceID + "'><br><br>\
+      <input type='text' id='id' name='id' value=''><br><br>\
       <label for='local'>Device Location:</label><br>\
-      <input type='text' id='local' name='local' value='" + deviceLocal + "'><br><br>\
+      <input type='text' id='local' name='local' value=''><br><br>\
+      <label for='door'>Door:</label><br>\
+      <select id='door' name='door'>\
+        <option value='entrance'>Entrance</option>\
+        <option value='exit'>Exit</option>\
+      </select><br><br>\
       <input type='submit' value='Submit'>\
     </form>\
     <div id='logs'>" + logs + "</div>\

@@ -1,11 +1,14 @@
 import cv2
 import pickle
 import requests
-from pyzbar.pyzbar import decode
 import time
 import base64
 import numpy as np
 import threading
+import json
+
+with open('config.json') as f:
+    config = json.load(f)
 
 serverURL =  "http://127.0.0.1:5000/"
 
@@ -13,29 +16,21 @@ local = None
 video_url = None
 face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
-
-esp_32_url_info = "http://"
-esp_32_id_info=int(input("set ESP32 to init:<id> "))
-response = requests.get(serverURL + f"esp?id={esp_32_id_info}")
+response = requests.get(serverURL + f"esp?id={config.get('esp32', {}).get('id')}")
 if response.status_code == 200:
-    esp_32_url_info = esp_32_url_info + response.json()['url']
-    video_url = esp_32_url_info  + ":81/stream"
+    video_url = "http://"  + response.json()['url'] + ":81/stream"
     local = response.json()['local']
-
-    print("esp-32-url: " + esp_32_url_info)
+    print("esp-32-url: " + "http://" + response.json()['url'] + ":88")
     if not local: 
         print("local: " + str(local))
 else:
     print("Failed to get ESP32 url:  ", response.json()['message'])
     exit()
 
-esp_8266_url_info = "http://"
-esp8266_id_info=int(input("set ESP8266 to init:<id> "))
-response = requests.get(serverURL + f"esp?id={esp8266_id_info}")
-if response.status_code == 200:
-    esp_8266_url_info = esp_8266_url_info + response.json()['url'] + ":88"
-    
-    print("esp-8266-url: " + esp_8266_url_info)
+response = requests.get(serverURL + f"esp?id={config.get('esp8266', {}).get('id')}")
+esp_8266_url = "http://" + response.json()['url'] + ":88"
+if response.status_code == 200: 
+    print("esp-8266-url: " + "http://" + response.json()['url'] + ":88")
     if not local: 
         local = response.json()['local']
         print("local: " + str(local))
@@ -56,22 +51,23 @@ def faceDetection():
         print("ESP32-CAM camera URL not found in the configuration file.")
         exit()
     
-    send_request_to_server("/leds/off")
+    send_request_to_esp_8266("/leds/off")
 
     while True:
         video_capture = cv2.VideoCapture(video_url)
         ret, frame = video_capture.read()
         if ret:
             if face(frame):
-                send_request_to_server("/leds/off")          
-                send_request_to_server("/led/blue/on")
+                send_request_to_esp_8266("/leds/off")          
+                send_request_to_esp_8266("/led/blue/on")
                 time.sleep(1)
-                send_request_to_server("/leds/off")
+                send_request_to_esp_8266("/leds/off")
         video_capture.release()
 
 def face(frame):
     global local
     global esp_last_state_face_detection
+    global register_user_id 
 
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = face_classifier.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
@@ -79,14 +75,14 @@ def face(frame):
     if len(faces) == 0:
         print('face-undetected')
         if esp_last_state_face_detection:
-            send_request_to_server("/led/yellow/off")
+            send_request_to_esp_8266("/led/yellow/off")
             esp_last_state_face_detection = False
 
     for (x, y, w, h) in faces:
         print('face-detected')
 
         if not esp_last_state_face_detection:
-            send_request_to_server("/led/yellow/on")
+            send_request_to_esp_8266("/led/yellow/on")
             esp_last_state_face_detection = True
             
         current_face = gray_frame[y:y+h, x:x+w]
@@ -105,23 +101,23 @@ def face(frame):
                         if max_val > 0.7:
 
                             print('face-recognized: ' + name)
-                            send_request_to_server("/led/green/on")
+                            send_request_to_esp_8266("/led/green/on")
                             time.sleep(0.2)
-                            send_request_to_server("/led/green/off")
+                            send_request_to_esp_8266("/led/green/off")
 
-                            if user_id_register == 0: return True    
+                            if register_user_id == None: return True    
 
             print('face-unrecognized')
-            send_request_to_server("/led/red/on")
+            send_request_to_esp_8266("/led/red/on")
             time.sleep(0.2)
-            send_request_to_server("/led/red/off")
+            send_request_to_esp_8266("/led/red/off")
 
-            if user_id_register !=0:
-                register_face(user_id_register,frame, x, y, w, h)
+            if not register_user_id == None:
+                register_face(register_user_id,frame, x, y, w, h)
                 print('face-registered')
-                send_request_to_server("/led/green/on")
+                send_request_to_esp_8266("/led/green/on")
                 time.sleep(0.2)
-                send_request_to_server("/led/green/off")
+                send_request_to_esp_8266("/led/green/off")
 
         except Exception as e:
             print("An error occurred:", str(e))
@@ -150,34 +146,34 @@ def register_face(id, frame, x, y, w, h):
     except Exception as e:
         print("An error occurred:", str(e))
 
-def get_esp_user_id_register(esp_id):
+def send_request_to_esp_8266(route):
+    global esp_8266_url
     try:
-        response = requests.get(f"{serverURL}esp/user-id-register?id={esp_id}")
-        if response.status_code == 200:
-            data = response.json()
-            user_id_register = data.get('user_id_register')
-            return user_id_register
-        else:
-            print(f"Failed to check ESP user id register. Status code: {response.status_code}")
-            return None
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return None
-
-def send_request_to_server(route):
-    url = esp_8266_url_info + route
-    try:
-        response = requests.get(url)
+        response = requests.get(esp_8266_url + route)
         if response.status_code == 200:
             print("Request sent successfully to:", route)
         else:
             print("Error sending request to:", route, response.status_code)
     except requests.RequestException as e:
         print("Error sending request to:", route, e)
+
+def get_esp_user_id_register(esp_id):
+    try:
+        response = requests.get(f"{serverURL}esp/register-mode?id={esp_id}")
+        if response.status_code == 200:
+            data = response.json()
+            return data.get('register_user_id')
+        else:
+            print(f"Failed to check ESP user id register. Status code: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
     
 def syncData():
-    global user_id_register 
-    user_id_register = get_esp_user_id_register(esp_32_id_info)
+    global register_user_id 
+    register_user_id = get_esp_user_id_register(config.get('esp32', {}).get('id'))
+    print(register_user_id)
     
 def run_syncData_repeatedly():
     timeout = 5
@@ -200,8 +196,6 @@ def run_faceDetection_repeatedly():
         time.sleep(timeout)
   
 def main():
-    syncData()
-
     sync_thread = threading.Thread(target=run_syncData_repeatedly)
     sync_thread.daemon = True
     sync_thread.start()

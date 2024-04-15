@@ -5,21 +5,12 @@
 WiFiClient client;
 ESP8266WebServer server(88);
 
-// WiFi credentials
-const char* ssid = "";
-const char* password = "";
+// **SET*** WiFi credentials
+const char* ssid = "PIRAMIDE 2.4Ghz";
+const char* password = "cleiton388";
 
-// Server Facial Data Access Layer URL
-String serverURL = "";
-
-// Logs
 String logs = "";
 
-// ID and Location
-String deviceID = "";
-String deviceLocal = "";
-
-// GPIO Pins
 const int D0 = 16;
 const int D1 = 5;
 const int D2 = 4;
@@ -93,17 +84,17 @@ void handleOnLeds() {
 
 void handleStartMe() {
   if (server.hasArg("url") && server.hasArg("id") && server.hasArg("local")) {
-    serverURL = server.arg("url");
-    deviceID = server.arg("id");
-    deviceLocal = server.arg("local");
+    String url = server.arg("url");
+    String id = server.arg("id");
+    String local = server.arg("local");
 
     if (WiFi.status() == WL_CONNECTED) {
       HTTPClient http;
-      String payload = "{\"id\": " + deviceID + ", \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\", \"local\": " + deviceLocal + "}";
+      String payload = "{\"id\": " + id + ", \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\", \"local\": " + local + ", \"mac\": \"" + WiFi.macAddress() + "\"}";
 
       updateLog("Starting ...");
 
-      http.begin(client, String(serverURL) + "/esp");
+      http.begin(client, String(url) + "/esp");
       http.addHeader("Content-Type", "application/json");
 
       int httpCode = http.POST(payload);
@@ -134,7 +125,7 @@ void handleConfiguration() {
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\
     <style>\
       body { font-family: Arial, Helvetica, sans-serif; }\
-      input[type=text], input[type=submit] {\
+      input[type=text], input[type=submit], select {\
         width: 100%;\
         padding: 12px;\
         border: 1px solid #ccc;\
@@ -164,12 +155,12 @@ void handleConfiguration() {
   </head>\
   <body>\
     <form action='/start-me' id='configForm' method='POST'>\
-      <label for='url'>Server URL:</label><br>\
-      <input type='text' id='url' name='url' value='" + serverURL + "'><br><br>\
+      <label for='url'>Data Access Server URL:</label><br>\
+      <input type='text' id='url' name='url' value=''><br><br>\
       <label for='id'>Device ID:</label><br>\
-      <input type='text' id='id' name='id' value='" + deviceID + "'><br><br>\
+      <input type='text' id='id' name='id' value=''><br><br>\
       <label for='local'>Device Location:</label><br>\
-      <input type='text' id='local' name='local' value='" + deviceLocal + "'><br><br>\
+      <input type='text' id='local' name='local' value=''><br><br>\
       <input type='submit' value='Submit'>\
     </form>\
     <div id='logs'>" + logs + "</div>\
@@ -208,6 +199,8 @@ void setup() {
   pinMode(ledGreen, OUTPUT);
   pinMode(ledRed, OUTPUT);
   pinMode(ledBlue, OUTPUT);
+
+  handleOnLeds();
 
   WiFi.begin(ssid, password);
   Serial.print("Connecting to ");
@@ -248,6 +241,8 @@ void setup() {
   server.sendHeader("Access-Control-Allow-Origin", "*");
 
   server.begin();
+
+  handleOffLeds();
 }
 
 void loop() {
