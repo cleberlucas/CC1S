@@ -10,13 +10,13 @@ import json
 with open('config.json') as f:
     config = json.load(f)
 
-serverURL =  "http://127.0.0.1:5000/"
+apiServerURL =  "http://127.0.0.1:5000/"
 
 local = None
 video_url = None
 face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
-response = requests.get(serverURL + f"esp?id={config.get('esp32', {}).get('id')}")
+response = requests.get(apiServerURL + f"esp?id={config.get('esp32', {}).get('id')}")
 if response.status_code == 200:
     video_url = "http://"  + response.json()['url'] + ":81/stream"
     local = response.json()['local']
@@ -27,7 +27,7 @@ else:
     print("Failed to get ESP32 url:  ", response.json()['message'])
     exit()
 
-response = requests.get(serverURL + f"esp?id={config.get('esp8266', {}).get('id')}")
+response = requests.get(apiServerURL + f"esp?id={config.get('esp8266', {}).get('id')}")
 esp_8266_url = "http://" + response.json()['url'] + ":88"
 if response.status_code == 200: 
     print("esp-8266-url: " + "http://" + response.json()['url'] + ":88")
@@ -88,7 +88,7 @@ def face(frame):
         current_face = gray_frame[y:y+h, x:x+w]
 
         try:
-            response = requests.get(serverURL + f"face?local={local}")
+            response = requests.get(apiServerURL + f"face?local={local}")
             if response.status_code == 200:
                 face_data = response.json().get('faces', [])
                 for face in face_data:
@@ -105,7 +105,9 @@ def face(frame):
                             time.sleep(0.2)
                             send_request_to_esp_8266("/led/green/off")
 
-                            if register_user_id == None: return True    
+                            if register_user_id == None: 
+                                send_request_to_esp_8266("/led/green/off")
+                                return True    
 
             print('face-unrecognized')
             send_request_to_esp_8266("/led/red/on")
@@ -123,7 +125,7 @@ def face(frame):
             print("An error occurred:", str(e))
     return False
 
-def register_face(id, frame, x, y, w, h):
+def register_face(user_id, frame, x, y, w, h):
     try:
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         registered_face = gray_frame[y:y+h, x:x+w]
@@ -132,16 +134,36 @@ def register_face(id, frame, x, y, w, h):
         serialized_face_base64 = base64.b64encode(serialized_face).decode('utf-8')
 
         data = {
-            'id': id,
+            'user_id': user_id,
             'serialized_face': serialized_face_base64
         }
 
-        response = requests.post(serverURL + "face", json=data)
+        response = requests.post(apiServerURL + "face", json=data)
 
         if response.status_code == 200:
             print("Face registered successfully")
         else:
             print("Failed to register face:", response.json())
+
+    except Exception as e:
+        print("An error occurred:", str(e))
+
+def register_capture():
+    try:
+
+        data = {
+            'user_id': 0,
+            'esp_id': config.get('esp32', {}).get('id'),
+            'local': 69,
+            'door': 'entrance'
+        }
+
+        response = requests.post(apiServerURL + "capture", json=data)
+
+        if response.status_code == 200:
+            print("Capture registered successfully")
+        else:
+            print("Failed to register capture:", response.json())
 
     except Exception as e:
         print("An error occurred:", str(e))
@@ -159,7 +181,7 @@ def send_request_to_esp_8266(route):
 
 def get_esp_user_id_register(esp_id):
     try:
-        response = requests.get(f"{serverURL}esp/register-mode?id={esp_id}")
+        response = requests.get(f"{apiServerURL}esp/register-mode?id={esp_id}")
         if response.status_code == 200:
             data = response.json()
             return data.get('register_user_id')

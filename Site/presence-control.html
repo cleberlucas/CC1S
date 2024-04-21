@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro de Presença</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #222;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #444;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      }
+      .info-gerais {
+        border-radius: 10px;
+        border: 2px solid #555;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .input-group,
+      .presentes,
+      .desconhecidos {
+        border-radius: 10px;
+        border: 2px solid #555;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .input-group label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      .input-group input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        border: none;
+        border-radius: 5px;
+        background-color: #555;
+        color: #fff;
+      }
+
+      .presentes,
+      .desconhecidos {
+        background-color: #666;
+      }
+      .lista {
+        margin-bottom: 20px;
+      }
+      .lista h2 {
+        margin-bottom: 10px;
+      }
+      .lista ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      .lista li {
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Registro de Presença</h1>
+      <div class="info-gerais">
+        <h2>Informações Gerais</h2>
+        <p><strong>Nome do Professor:</strong> Renato</p>
+        <p><strong>Número da Sala:</strong> 69</p>
+        <p>
+          <strong>Nome do Curso:</strong> Modelagem e requisitos de negócios
+        </p>
+      </div>
+      <div class="input-group">
+        <label for="inicio-aula1">Horário de início da 1ª aula:</label>
+        <input
+          type="text"
+          id="inicio-aula1"
+          placeholder="HH:MM"
+          maxlength="5"
+        />
+        <label for="fim-aula1">Horário de término da 1ª aula:</label>
+        <input type="text" id="fim-aula1" placeholder="HH:MM" maxlength="5" />
+        <label for="aproveitamento-aula1">Porcentagem de aproveitamento:</label>
+        <input
+          type="text"
+          id="aproveitamento-aula1"
+          placeholder="%"
+          maxlength="3"
+        />
+      </div>
+      <div class="input-group">
+        <label for="inicio-aula2">Horário de início da 2ª aula:</label>
+        <input
+          type="text"
+          id="inicio-aula2"
+          placeholder="HH:MM"
+          maxlength="5"
+        />
+        <label for="fim-aula2">Horário de término da 2ª aula:</label>
+        <input type="text" id="fim-aula2" placeholder="HH:MM" maxlength="5" />
+        <label for="aproveitamento-aula2">Porcentagem de aproveitamento:</label>
+        <input
+          type="text"
+          id="aproveitamento-aula2"
+          placeholder="%"
+          maxlength="3"
+        />
+      </div>
+      <div class="presentes lista">
+        <h2>Alunos Presentes</h2>
+        <p>Total: <span id="total-alunos-presentes">0</span></p>
+        <ul id="alunos-presentes"></ul>
+      </div>
+      <div class="desconhecidos lista">
+        <h2>Pessoas Desconhecidas</h2>
+        <p>Total: <span id="total-desconhecidos">0</span></p>
+        <ul id="desconhecidos"></ul>
+      </div>
+    </div>
+
+    <script>
+      function preencherListas() {
+        var alunosPresentes = [
+          { nome: "Cleber", entrada: "19:26", saida: "19:34" },
+          { nome: "Isabela", entrada: "19:11", saida: "20:32" },
+          { nome: "João", entrada: "20:44", saida: "21:22" },
+          { nome: "Mateus", entrada: "20:21", saida: "21:43" },
+          { nome: "Maycon", entrada: "19:15", saida: "19:57" },
+          { nome: "Tauane", entrada: "19:20", saida: "21:33" },
+        ];
+
+        var desconhecidos = [
+          { nome: "desconhecido 5", entrada: "19:15", saida: "19:50" },
+          { nome: "desconhecido 34", entrada: "19:00", saida: "20:50" },
+          { nome: "desconhecido 5", entrada: "20:33", saida: "21:32" },
+          { nome: "desconhecido 11", entrada: "20:10", saida: "21:20" },
+          { nome: "desconhecido 73", entrada: "19:15", saida: "19:50" },
+        ];
+
+        var listaAlunosPresentes = document.getElementById("alunos-presentes");
+        var listaDesconhecidos = document.getElementById("desconhecidos");
+
+        alunosPresentes.forEach(function (aluno) {
+          var li = document.createElement("li");
+          li.textContent =
+            aluno.nome +
+            " - Entrada: " +
+            aluno.entrada +
+            " | Saída: " +
+            aluno.saida;
+          listaAlunosPresentes.appendChild(li);
+        });
+
+        desconhecidos.forEach(function (pessoa) {
+          var li = document.createElement("li");
+          li.textContent =
+            pessoa.nome +
+            " - Entrada: " +
+            pessoa.entrada +
+            " | Saída: " +
+            pessoa.saida;
+          listaDesconhecidos.appendChild(li);
+        });
+
+        document.getElementById("total-alunos-presentes").textContent =
+          alunosPresentes.length;
+
+        document.getElementById("total-desconhecidos").textContent =
+          desconhecidos.length;
+      }
+
+      window.onload = preencherListas;
+    </script>
+  </body>
+</html>
