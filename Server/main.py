@@ -5,10 +5,7 @@ import time
 import base64
 import numpy as np
 import threading
-import json
-
-with open('config.json') as f:
-    config = json.load(f)
+import asyncio
 
 apiServerURL =  "http://127.0.0.1:5000/"
 
@@ -16,7 +13,7 @@ local = None
 video_url = None
 face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
-response = requests.get(apiServerURL + f"esp?id={config.get('esp32', {}).get('id')}")
+response = requests.get(apiServerURL + f"esp?id=1")
 if response.status_code == 200:
     video_url = "http://"  + response.json()['url'] + ":81/stream"
     local = response.json()['local']
@@ -27,7 +24,7 @@ else:
     print("Failed to get ESP32 url:  ", response.json()['message'])
     exit()
 
-response = requests.get(apiServerURL + f"esp?id={config.get('esp8266', {}).get('id')}")
+response = requests.get(apiServerURL + f"esp?id=2")
 esp_8266_url = "http://" + response.json()['url'] + ":88"
 if response.status_code == 200: 
     print("esp-8266-url: " + "http://" + response.json()['url'] + ":88")
@@ -38,6 +35,8 @@ if response.status_code == 200:
 else:
     print("Failed to get ESP8266 url: ", response.json()['message'])
     exit()
+
+
 
 def faceDetection():
     global esp_last_state_face_detection
@@ -94,6 +93,7 @@ def face(frame):
                 for face in face_data:
                     name = face.get('name')
                     face_img = face.get('face_img')
+                    user_id = face.get('user_id')
                     if face_img is not None:
                         registered_face = np.array(face_img, dtype=np.uint8)
                         res = cv2.matchTemplate(current_face, registered_face, cv2.TM_CCOEFF_NORMED)
@@ -105,7 +105,8 @@ def face(frame):
                             time.sleep(0.2)
                             send_request_to_esp_8266("/led/green/off")
 
-                            if register_user_id == None: 
+                            if register_user_id == None:
+                                register_capture_fixed_example(user_id)
                                 send_request_to_esp_8266("/led/green/off")
                                 return True    
 
@@ -148,12 +149,11 @@ def register_face(user_id, frame, x, y, w, h):
     except Exception as e:
         print("An error occurred:", str(e))
 
-def register_capture():
+def register_capture_fixed_example(user_id):
     try:
-
         data = {
-            'user_id': 0,
-            'esp_id': config.get('esp32', {}).get('id'),
+            'user_id': user_id,
+            'esp_id': 1,
             'local': 69,
             'door': 'entrance'
         }
@@ -181,7 +181,7 @@ def send_request_to_esp_8266(route):
 
 def get_esp_user_id_register(esp_id):
     try:
-        response = requests.get(f"{apiServerURL}esp/register-mode?id={esp_id}")
+        response = requests.get(f"{apiServerURL}esp/register-user-id?id={esp_id}")
         if response.status_code == 200:
             data = response.json()
             return data.get('register_user_id')
@@ -194,7 +194,7 @@ def get_esp_user_id_register(esp_id):
     
 def syncData():
     global register_user_id 
-    register_user_id = get_esp_user_id_register(config.get('esp32', {}).get('id'))
+    register_user_id = get_esp_user_id_register(1)
     print(register_user_id)
     
 def run_syncData_repeatedly():

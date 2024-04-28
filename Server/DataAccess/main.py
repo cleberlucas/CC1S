@@ -145,7 +145,7 @@ def esp_post():
 
     return jsonify({'message': response})
 
-@app.route('/esp/register-mode', methods=['GET'])
+@app.route('/esp/register-user-id', methods=['GET'])
 def get_register_mode_get():
     try:
         id = request.args.get('id')
@@ -163,12 +163,12 @@ def get_register_mode_get():
         if db_connection.is_connected():
             cursor = db_connection.cursor()
             cursor.execute("SELECT register_user_id FROM system_esp WHERE id = %s", (id,))
-            register_mode = cursor.fetchone()
+            register_user_id = cursor.fetchone()
             cursor.close()
             db_connection.close()
 
-            if register_mode is not None:
-                return jsonify({'register_user_id': register_mode[0]})
+            if register_user_id is not None:
+                return jsonify({'register_user_id': register_user_id[0]})
             else:
                 return jsonify({'message': 'User not found'}), 404
         else:
