@@ -36,8 +36,6 @@ else:
     print("Failed to get ESP8266 url: ", response.json()['message'])
     exit()
 
-
-
 def faceDetection():
     global esp_last_state_face_detection
 
@@ -232,4 +230,3 @@ def main():
 if __name__ == "__main__":
     main()
     
-

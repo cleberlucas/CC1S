@@ -32,133 +32,19 @@
 //#define CAMERA_MODEL_ESP32S3_CAM_LCD
 //#define CAMERA_MODEL_DFRobot_FireBeetle2_ESP32S3 // Has PSRAM
 //#define CAMERA_MODEL_DFRobot_Romeo_ESP32S3 // Has PSRAM
+#define LED_LEDC_CHANNEL 2 //Using different ledc channel/timer than camera
+#define CONFIG_LED_INTENSITY 25
 #include "camera_pins.h"
 
 WiFiClient client;
 WebServer server(88);
 
 // **SET*** WiFi credentials
-const char* ssid = "";
-const char* password = "";
-
-String logs = "";
+const char* ssid = ".";
+const char* password = "........";
 
 void startCameraServer();
 void setupLedFlash(int pin);
-
-void handleStartMe() {
-  if (server.hasArg("url") && server.hasArg("id") && server.hasArg("local") && server.hasArg("door")) {
-    String url = server.arg("url");
-    String id = server.arg("id");
-    String local = server.arg("local");
-    String door = server.arg("door");
-
-    if (WiFi.status() == WL_CONNECTED) {
-      HTTPClient http;
-      String payload = "{\"id\": " + id + ", \"url\": \"" + WiFi.localIP().toString() + "\", \"ssid\": \"" + ssid + "\", \"local\": " + local + ", \"mac\": \"" + WiFi.macAddress()+ "\", \"door\": \"" + door + "\"}";
-
-      updateLog("Starting ...");
-
-      http.begin(client, String(url) + "/esp");
-      http.addHeader("Content-Type", "application/json");
-
-      int httpCode = http.POST(payload);
-
-      if (httpCode > 0) {
-        String response = http.getString();
-        updateLog("Server response: " + response);
-      } else {
-        updateLog("Error sending request to the server");
-        updateLog(http.errorToString(httpCode));
-      }
-
-      http.end();
-    } else {
-      updateLog("Not connected to WiFi network");
-    }
-  } else {
-    updateLog("Missing parameters in the request.");
-  }
-
-  sendLogs();
-}
-
-void handleConfiguration() {
-  String htmlResponse = "<!DOCTYPE html>\
-  <html>\
-  <head>\
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\
-    <style>\
-      body { font-family: Arial, Helvetica, sans-serif; }\
-      input[type=text], input[type=submit], select {\
-        width: 100%;\
-        padding: 12px;\
-        border: 1px solid #ccc;\
-        border-radius: 4px;\
-        box-sizing: border-box;\
-        margin-top: 6px;\
-        margin-bottom: 16px;\
-      }\
-      input[type=submit] {\
-        background-color: #4CAF50;\
-        color: white;\
-        padding: 14px 20px;\
-        border: none;\
-        border-radius: 4px;\
-        cursor: pointer;\
-      }\
-      input[type=submit]:hover {\
-        background-color: #45a049;\
-      }\
-      #logs {\
-        padding: 10px;\
-        border: 1px solid #ccc;\
-        border-radius: 4px;\
-        background-color: #f2f2f2;\
-      }\
-    </style>\
-  </head>\
-  <body>\
-    <form action='/start-me' id='configForm' method='POST'>\
-      <label for='url'>Data Access Server URL:</label><br>\
-      <input type='text' id='url' name='url' value=''><br><br>\
-      <label for='id'>Device ID:</label><br>\
-      <input type='text' id='id' name='id' value=''><br><br>\
-      <label for='local'>Device Location:</label><br>\
-      <input type='text' id='local' name='local' value=''><br><br>\
-      <label for='door'>Door:</label><br>\
-      <select id='door' name='door'>\
-        <option value='entrance'>Entrance</option>\
-        <option value='exit'>Exit</option>\
-      </select><br><br>\
-      <input type='submit' value='Submit'>\
-    </form>\
-    <div id='logs'>" + logs + "</div>\
-    <script>\
-      function updateLogs() {\
-        var logsDiv = document.getElementById('logs');\
-        logsDiv.innerHTML = '" + logs + "';\
-      }\
-      setInterval(updateLogs, 1000);\
-    </script>\
-  </body>\
-  </html>";
-
-  server.send(200, "text/html", htmlResponse);
-}
-
-void sendResponse(String message) {
-  server.send(200, "text/plain", message);
-  updateLog(message);
-}
-
-void sendLogs() {
-  server.send(200, "text/plain", logs);
-}
-
-void updateLog(String log){
-    logs += log + "<br>";
-}
 
 void setup() {
   Serial.begin(115200);
@@ -249,13 +135,14 @@ void setup() {
 // Setup LED FLash if LED pin is defined in camera_pins.h
 #if defined(LED_GPIO_NUM)
   setupLedFlash(LED_GPIO_NUM);
+  ledcWrite(LED_LEDC_CHANNEL, CONFIG_LED_INTENSITY);
 #endif
 
   WiFi.begin(ssid, password);
   Serial.print("Connecting to ");
   Serial.print(ssid); 
   Serial.println(" ...");
-
+  
   int i = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
@@ -265,17 +152,18 @@ void setup() {
 
   Serial.println('\n');
   Serial.println("Connection established!");  
-  Serial.print("Camera Ready! Use 'http://");
-  Serial.print(WiFi.localIP());
-  Serial.println("' to connect");
-
-  server.on("/configuration", HTTP_GET, handleConfiguration);
-
-  server.on("/start-me", HTTP_POST, handleStartMe);
+  Serial.print("IP Address:\t");
+  Serial.println(WiFi.localIP());
+  Serial.print("Mac Address:\t");
+  Serial.println(WiFi.macAddress());
 
   server.begin();
 
   startCameraServer();
+
+#if defined(LED_GPIO_NUM)
+  ledcWrite(LED_LEDC_CHANNEL, 0);
+#endif
 }
 
 void loop() {
