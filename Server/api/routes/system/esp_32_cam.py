@@ -99,10 +99,16 @@ def get_all_esps():
             $ref: '#/definitions/ESP-32-CAM'
     """
     local_filter = request.args.get('local')
+    mac_filter = request.args.get('mac')
+
+    query = SystemEsp32Cam.query
+
     if local_filter:
-        esp_32_cams = SystemEsp32Cam.query.filter_by(local=local_filter).all()
-    else:
-        esp_32_cams = SystemEsp32Cam.query.all()
+        query = query.filter_by(local=local_filter)
+    if mac_filter:
+        query = query.filter_by(mac=mac_filter)
+
+    esp_32_cams = query.all()
 
     return jsonify([{
         'id': esp_32_cam.id,
@@ -112,7 +118,6 @@ def get_all_esps():
         'register_user_id': esp_32_cam.register_user_id,
         'last_start': esp_32_cam.last_start
     } for esp_32_cam in esp_32_cams])
-
 @esp_32_cam_bp.route('/<int:id>', methods=['PUT'])
 def update_esp(id):
     """
@@ -144,12 +149,20 @@ def update_esp(id):
     """
     data = request.json
     esp_32_cam = SystemEsp32Cam.query.get_or_404(id)
-    esp_32_cam.mac = data['mac']
-    esp_32_cam.door = data.get('door')
-    esp_32_cam.local = data['local']
-    esp_32_cam.register_user_id = data.get('register_user_id')
+    
+    if 'mac' in data:
+        esp_32_cam.mac = data['mac']
+    if 'door' in data:
+        esp_32_cam.door = data['door']
+    if 'local' in data:
+        esp_32_cam.local = data['local']
+    if 'register_user_id' in data:
+        esp_32_cam.register_user_id = data['register_user_id']
+    
     db.session.commit()
+    
     return jsonify({'message': 'ESP-32-CAM updated successfully'})
+
 
 @esp_32_cam_bp.route('/<int:id>', methods=['DELETE'])
 def delete_esp(id):

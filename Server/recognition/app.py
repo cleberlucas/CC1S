@@ -8,19 +8,17 @@ import requests
 import numpy as np
 from utils.network import get_ip_from_mac
 
-
-
 _dic_frame = {}
 _dic_ip = {}
 
 _dic_cameras_macs = {}
 _dic_locks_macs = {}
 
-_dic_user_resgister_id = {}
+_dic_cameras_user_register_id = {}
 
 _classifier_face = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
-def get_connection(local):
+def get_connection_sync(local):
     try:
         global _dic_ip
         global _dic_cameras_macs
@@ -37,7 +35,7 @@ def get_connection(local):
         for api_url in endpoints:
             response = requests.get(api_url)
             if response.status_code != 200:
-                raise Exception(f"get_connection: Error making request. Status code:", response.status_code)
+                raise Exception(f"get_connection_sync: Error making request. Status code:", response.status_code)
             
             data = response.json()
             for item in data:
@@ -47,20 +45,19 @@ def get_connection(local):
                     ip = get_ip_from_mac(mac)
 
                     if ip is None:
-                        raise Exception(f"get_connection: Not found ip to mac {mac}", response.status_code)
+                        raise Exception(f"get_connection_sync: Not found ip to mac {mac}", response.status_code)
 
                     _dic_ip[mac] = ip
-                    _dic_user_resgister_id[mac] = None
 
                     if api_url == api_url_local_camera:            
                         _dic_cameras_macs[local].append(mac)
+                        print(f"get_connection_sync: Ip found {ip} to camera mac {mac} found")
                     else:
                         _dic_locks_macs[local].append(mac)
-
-                    print(f"get_connection: Ip found {ip} to mac {mac} found")
+                        print(f"get_connection_sync: Ip found {ip} to lock mac {mac} found")
 
     except Exception as e:
-        raise Exception(f"get_connection: Error making request:", e)
+        raise Exception(f"get_connection_sync: Error making request:", e)
 
 async def get_face_async(camera_local=None):
     try:
@@ -116,34 +113,64 @@ async def lock_async(lock_local, command):
     except Exception as e:
         print("lock_async: Error making request:", e)
 
-async def capture_handler_async(mac_address):
-    print(f"capture_handler_async: Initialized for MAC address {mac_address}")
+async def user_register_async(camera_mac_address):
+    try:
+        api_url = f"http://localhost:5000/esp-32-cam?mac={camera_mac_address}"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url) as response:
+                if response.status != 200:
+                    print("lock_async: Error making request. Status code:", response.status)
+                    return None
+                return await response.json()
+    except Exception as e:
+        print("lock_async: Error making request:", e)
+
+async def capture_handler_async(camera_mac_address):
+    print(f"capture_handler_async: Initialized for camera MAC camera address {camera_mac_address}")
 
     global _dic_ip
 
-    cap = cv2.VideoCapture(f'http://{_dic_ip[mac_address]}:81/stream')
+    cap = cv2.VideoCapture(f'http://{_dic_ip[camera_mac_address]}:81/stream')
 
     if not cap.isOpened():
-        print(f"capture_handler_async: Error opening video capture for MAC address {mac_address}")
+        print(f"capture_handler_async: Error opening video capture for camera MAC address {camera_mac_address}")
         return
 
     while True:
         ret, frame = cap.read()
         if not ret:
-            print(f"capture_handler_async: Error reading frame for MAC address {mac_address}")
+            print(f"capture_handler_async: Error reading frame for camera MAC address {camera_mac_address}")
             return
         
-        _dic_frame[mac_address] = frame
-        print(f"capture_handler_async: Executed for MAC address {mac_address}")
+        _dic_frame[camera_mac_address] = frame
+        print(f"capture_handler_async: Executed for camera MAC address {camera_mac_address}")
         await asyncio.sleep(0.1)
 
-async def stream_video_handler_async(mac_address, rotate_video=False, mirror_video=False):
-    print(f"stream_video_handler_async: Initialized for MAC address {mac_address}")
+async def register_mode_handler_async(camera_mac_address):
+    print(f"register_mode_handler_async: Initialized for camera MAC address {camera_mac_address}")
+
+    global _dic_cameras_user_register_id
+
+    while True:
+        user_register = (await user_register_async(camera_mac_address))[0].get('register_user_id')
+
+        _dic_cameras_user_register_id[camera_mac_address] =  user_register
+
+        if user_register is not None:
+            print(f"register_mode_handler_async: Found user {user_register} for register for camera MAC address {camera_mac_address}")
+        else:
+            print(f"register_mode_handler_async: Not found user for register for camera MAC address {camera_mac_address}")
+
+        await asyncio.sleep(5)
+
+async def stream_video_handler_async(camera_mac_address, rotate_video=False, mirror_video=False):
+    print(f"stream_video_handler_async: Initialized for camera MAC address {camera_mac_address}")
 
     global _dic_frame
 
     while True:
-        frame = _dic_frame[mac_address]
+        frame = _dic_frame[camera_mac_address]
         if frame is None or frame.size == 0:
             await asyncio.sleep(0.2)
             continue
@@ -165,10 +192,10 @@ async def stream_video_handler_async(mac_address, rotate_video=False, mirror_vid
         await asyncio.sleep(0.1)
 
 async def recognition_handler_async(lock_local, camera_mac_address, rotate_video=False):
-    print(f"recognition_handler_async: Initialized for MAC address {camera_mac_address}")
+    print(f"recognition_handler_async: Initialized for camera MAC address {camera_mac_address}")
 
     global _dic_frame
-    global _dic_user_resgister_id
+    global _dic_cameras_user_register_id
 
     last_state_face_detected = None
     while True:
@@ -178,56 +205,56 @@ async def recognition_handler_async(lock_local, camera_mac_address, rotate_video
             frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
 
         if frame is None or frame.size == 0:
-            print(f"recognition_handler_async: Frame not detected for MAC address {camera_mac_address}")
+            print(f"recognition_handler_async: Frame not detected for camera MAC address {camera_mac_address}")
 
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = _classifier_face.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
         if len(faces) == 0:
-            print(f"recognition_handler_async: No faces detecteds for MAC address {camera_mac_address}")
+            print(f"recognition_handler_async: No faces detecteds for camera MAC address {camera_mac_address}")
 
             if last_state_face_detected is None or last_state_face_detected:
                 await lock_async(lock_local, "led/yellow/off")
                 last_state_face_detected = False
         else:
-            print(f"recognition_handler_async: Faces detecteds for MAC address {camera_mac_address}")
+            print(f"recognition_handler_async: Faces detecteds for camera MAC address {camera_mac_address}")
 
             if last_state_face_detected is None or not last_state_face_detected:
                 await lock_async(lock_local, "led/yellow/on")
                 last_state_face_detected = True
             
             for (x, y, w, h) in faces:              
-                if not _dic_user_resgister_id[camera_mac_address] is None:
-                    await register_async(lock_local, 1 ,frame, x, y, w, h)
-                else:
-                    current_face = gray_frame[y:y+h, x:x+w]
+                current_face = gray_frame[y:y+h, x:x+w]
 
-                    recognized = False
-                    for face in await get_face_async(lock_local):
-                        face_img = face.get('face_img')
+                recognized = False
+                for face in await get_face_async(lock_local):
+                    face_img = face.get('face_img')
 
-                        if face_img is not None:
-                            res = cv2.matchTemplate(current_face, pickle.loads(base64.b64decode(face_img)), cv2.TM_CCOEFF_NORMED)
-                            _, max_val, _, _ = cv2.minMaxLoc(res)
+                    if face_img is not None:
+                        res = cv2.matchTemplate(current_face, pickle.loads(base64.b64decode(face_img)), cv2.TM_CCOEFF_NORMED)
+                        _, max_val, _, _ = cv2.minMaxLoc(res)
 
-                            if max_val > 0.7: 
-                                recognized = True
-                                break
-                    
-                    if recognized:
-                        await recognized_async(lock_local)
-                        await unlock_async(lock_local)
-                    else:  
-                        await unrecognized_async(lock_local)
+                        if max_val > 0.7: 
+                            recognized = True
+                            break
+                
+                if recognized:            
+                    await recognized_async(lock_local)
+                    if _dic_cameras_user_register_id[camera_mac_address] is None: await unlock_async(lock_local)
+                else:  
+                    await unrecognized_async(lock_local)
+                    if _dic_cameras_user_register_id[camera_mac_address] is not None:
+                        print(f"recognition_handler_async: Register user {_dic_cameras_user_register_id[camera_mac_address]} for camera MAC address {camera_mac_address}")
+                        await register_async(lock_local, _dic_cameras_user_register_id[camera_mac_address] ,frame, x, y, w, h)
 
             
         await asyncio.sleep(0.1)
 
 
 async def register_async(lock_local, user_id, frame, x, y, w, h):
-    await lock_async(lock_local, "led/green/on")
+    await lock_async(lock_local, "leds/on")
     await send_face_async(user_id, frame, x, y, w, h)
-    await lock_async(lock_local, "led/green/off")
+    await lock_async(lock_local, "leds/off")
 
 async def recognized_async(lock_local):
     await lock_async(lock_local, "led/green/on")
@@ -252,9 +279,10 @@ async def run_tasks_sync():
 
     tasks = []
     for local in locals:
-        get_connection(local)
+        get_connection_sync(local)
         for camera_mac_address in _dic_cameras_macs[local]:
             tasks.append(capture_handler_async(camera_mac_address))
+            tasks.append(register_mode_handler_async(camera_mac_address))
             tasks.append(recognition_handler_async(local, camera_mac_address, True))
             tasks.append(stream_video_handler_async(camera_mac_address, True, True))
 

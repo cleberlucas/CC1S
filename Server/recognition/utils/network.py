@@ -11,7 +11,7 @@ def scan_network():
                 mac_address = parts[1].replace("-", ":").lower()
                 active_devices[mac_address] = ip_address
     except Exception as e:
-        print(f"Error executing arp command: {e}")
+        raise Exception (f"scan_network: Error executing arp command: {e}")
     return active_devices
 
 def get_ip_from_mac(mac_address):
