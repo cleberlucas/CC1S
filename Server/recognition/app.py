@@ -29,7 +29,9 @@ def get_connection_sync(local):
 
         endpoints = [api_url_local_camera, api_url_local_lock]
 
+        #The location may have more than one camera, but two are recommended based on the input and output door logic
         _dic_cameras_macs[local] = []
+        #For each location there must be a lock, the first lock occurrence of the location will always be caught
         _dic_locks_macs[local]  = []
         
         for api_url in endpoints:
@@ -76,7 +78,20 @@ async def get_face_async(camera_local=None):
         print("get_face_async: Error making request:", e)
         return []
     
-async def send_face_async(user_id, frame, x, y, w, h):
+async def get_user_register_async(camera_mac_address):
+    try:
+        api_url = f"http://localhost:5000/esp-32-cam?mac={camera_mac_address}"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url) as response:
+                if response.status != 200:
+                    print("led_lock_async: Error making request. Status code:", response.status)
+                    return None
+                return await response.json()
+    except Exception as e:
+        print("led_lock_async: Error making request:", e)
+    
+async def post_face_async(user_id, frame, x, y, w, h):
     try:
         api_url = f"http://localhost:5000/face"
 
@@ -96,35 +111,112 @@ async def send_face_async(user_id, frame, x, y, w, h):
         async with aiohttp.ClientSession() as session:
             async with session.post(api_url, json=payload, headers=headers) as response:
                 if response.status != 200:
-                    print("send_face_async: Error making request. Status code:", response.status)
+                    print("post_face_async: Error making request. Status code:", response.status)
 
     except Exception as e:
-        print("send_face_async: Error making request:", e)
+        print("post_face_async: Error making request:", e)
 
-async def lock_async(lock_local, command):
+async def post_capture_async(user_id, local, door='ENTRANCE'):
     try:
-        api_url = f"http://{_dic_ip[_dic_locks_macs[lock_local][0]]}:88/{command}"
+        api_url = f"http://localhost:5000/capture"
+
+        payload = {
+            'user_id': user_id,
+            'local': local,
+            'door': door,
+        }
+
+        headers = {"Content-Type": "application/json"}
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(api_url, json=payload, headers=headers) as response:
+                if response.status != 200:
+                    print("post_capture_async: Error making request. Status code:", response.status)
+
+    except Exception as e:
+        print("post_capture_async: Error making request:", e)
+
+async def led_lock_async(lock_local, ledcommads):
+    try:
+        
+        api_url = f"http://{_dic_ip[_dic_locks_macs[lock_local][0]]}:88/{ledcommads}"
 
         async with aiohttp.ClientSession() as session:
             async with session.get(api_url) as response:
                 if response.status != 200:
-                    print("lock_async: Error making request. Status code:", response.status)
+                    print("led_lock_async: Error making request. Status code:", response.status)
                     return
     except Exception as e:
-        print("lock_async: Error making request:", e)
+        print("led_lock_async: Error making request:", e)
 
-async def user_register_async(camera_mac_address):
+async def put_user_lock_async(lock_local, user_id):
     try:
-        api_url = f"http://localhost:5000/esp-32-cam?mac={camera_mac_address}"
+        
+        api_url = f"http://{_dic_ip[_dic_locks_macs[lock_local][0]]}:88/user?user_id={user_id}"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.put(api_url) as response:
+                if response.status != 200:
+                    print("put_user_lock_async: Error making request. Status code:", response.status)
+                    return
+    except Exception as e:
+        print("put_user_lock_async: Error making request:", e)
+
+async def get_user_lock_async(lock_local):
+    try:
+        
+        api_url = f"http://{_dic_ip[_dic_locks_macs[lock_local][0]]}:88/user"
 
         async with aiohttp.ClientSession() as session:
             async with session.get(api_url) as response:
                 if response.status != 200:
-                    print("lock_async: Error making request. Status code:", response.status)
+                    print("get_user_lock_async: Error making request. Status code:", response.status)
+                    return ''
+                return await response.json()
+    except Exception as e:
+        print("get_user_lock_async: Error making request:", e)
+
+async def get_lock_synchronize_async(lock_local):
+    try:
+        
+        api_url = f"http://{_dic_ip[_dic_locks_macs[lock_local][0]]}:88/synchronize"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url) as response:
+                if response.status != 200:
+                    print("get_lock_synchronize_async: Error making request. Status code:", response.status)
                     return None
                 return await response.json()
     except Exception as e:
-        print("lock_async: Error making request:", e)
+        print("get_lock_synchronize_async: Error making request:", e)
+
+async def put_lock_synchronize_async(lock_local):
+    try:
+        api_url = f"http://{_dic_ip[_dic_locks_macs[lock_local][0]]}:88/synchronize"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.put(api_url) as response:
+                if response.status != 200:
+                    print("put_lock_synchronize_async: Error making request. Status code:", response.status)
+                    return
+    except Exception as e:
+        print("put_lock_synchronize_async: Error making request:", e)
+
+async def synchronize_handler_async(lock_local):
+    print(f"synchronize_handler_async: Initialized for lock local {lock_local}")
+
+    while True:
+        if (await get_lock_synchronize_async(lock_local)).get("synchronize") == "SYNC_PENDING":
+            user_id = (await get_user_lock_async(lock_local)).get('user_id')
+
+            print (user_id)
+
+            #Logic control of entrance and exit ports soon, for now, only the entrance with control will be fixed
+            await post_capture_async(user_id, lock_local)
+            await put_lock_synchronize_async(lock_local)
+        
+        print(f"synchronize_handler_async: Executed for lock local {lock_local}")
+        await asyncio.sleep(1)
 
 async def capture_handler_async(camera_mac_address):
     print(f"capture_handler_async: Initialized for camera MAC camera address {camera_mac_address}")
@@ -153,7 +245,7 @@ async def register_mode_handler_async(camera_mac_address):
     global _dic_cameras_user_register_id
 
     while True:
-        user_register = (await user_register_async(camera_mac_address))[0].get('register_user_id')
+        user_register = (await get_user_register_async(camera_mac_address))[0].get('register_user_id')
 
         _dic_cameras_user_register_id[camera_mac_address] =  user_register
 
@@ -214,13 +306,13 @@ async def recognition_handler_async(lock_local, camera_mac_address, rotate_video
             print(f"recognition_handler_async: No faces detecteds for camera MAC address {camera_mac_address}")
 
             if last_state_face_detected is None or last_state_face_detected:
-                await lock_async(lock_local, "led/yellow/off")
+                await led_lock_async(lock_local, "led/yellow/off")
                 last_state_face_detected = False
         else:
             print(f"recognition_handler_async: Faces detecteds for camera MAC address {camera_mac_address}")
 
             if last_state_face_detected is None or not last_state_face_detected:
-                await lock_async(lock_local, "led/yellow/on")
+                await led_lock_async(lock_local, "led/yellow/on")
                 last_state_face_detected = True
             
             for (x, y, w, h) in faces:              
@@ -229,6 +321,7 @@ async def recognition_handler_async(lock_local, camera_mac_address, rotate_video
                 recognized = False
                 for face in await get_face_async(lock_local):
                     face_img = face.get('face_img')
+                    user_id = face.get('user_id')
 
                     if face_img is not None:
                         res = cv2.matchTemplate(current_face, pickle.loads(base64.b64decode(face_img)), cv2.TM_CCOEFF_NORMED)
@@ -236,14 +329,16 @@ async def recognition_handler_async(lock_local, camera_mac_address, rotate_video
 
                         if max_val > 0.7: 
                             recognized = True
+                            if _dic_cameras_user_register_id[camera_mac_address] is None:    
+                                await put_user_lock_async(lock_local,user_id)         
+                                await recognized2_async(lock_local)
                             break
                 
-                if recognized:            
-                    await recognized_async(lock_local)
-                    if _dic_cameras_user_register_id[camera_mac_address] is None: await unlock_async(lock_local)
-                else:  
-                    await unrecognized_async(lock_local)
-                    if _dic_cameras_user_register_id[camera_mac_address] is not None:
+                if _dic_cameras_user_register_id[camera_mac_address] is not None:
+                    if recognized:            
+                        await recognized_async(lock_local)
+                    else:  
+                        await unrecognized_async(lock_local)
                         print(f"recognition_handler_async: Register user {_dic_cameras_user_register_id[camera_mac_address]} for camera MAC address {camera_mac_address}")
                         await register_async(lock_local, _dic_cameras_user_register_id[camera_mac_address] ,frame, x, y, w, h)
 
@@ -252,25 +347,24 @@ async def recognition_handler_async(lock_local, camera_mac_address, rotate_video
 
 
 async def register_async(lock_local, user_id, frame, x, y, w, h):
-    await lock_async(lock_local, "leds/on")
-    await send_face_async(user_id, frame, x, y, w, h)
-    await lock_async(lock_local, "leds/off")
+    await led_lock_async(lock_local, "leds/on")
+    await post_face_async(user_id, frame, x, y, w, h)
+    await led_lock_async(lock_local, "leds/off")
 
 async def recognized_async(lock_local):
-    await lock_async(lock_local, "led/green/on")
+    await led_lock_async(lock_local, "led/green/on")
     await asyncio.sleep(1)
-    await lock_async(lock_local, "led/green/off")
+    await led_lock_async(lock_local, "led/green/off")
+
+async def recognized2_async(lock_local):
+    await led_lock_async(lock_local, "led/blue/on")
+    await asyncio.sleep(1)
+    await led_lock_async(lock_local, "led/blue/off")
 
 async def unrecognized_async(lock_local):
-    await lock_async(lock_local, "led/red/on")
+    await led_lock_async(lock_local, "led/red/on")
     await asyncio.sleep(1)
-    await lock_async(lock_local, "led/red/off")
-
-async def unlock_async(lock_local):
-    await lock_async(lock_local, "leds/off")          
-    await lock_async(lock_local,"led/blue/on")
-    await asyncio.sleep(1)
-    await lock_async(lock_local,"leds/off")
+    await led_lock_async(lock_local, "led/red/off")
 
 async def run_tasks_sync(): 
     with open('../config.json') as f:
@@ -280,6 +374,7 @@ async def run_tasks_sync():
     tasks = []
     for local in locals:
         get_connection_sync(local)
+        tasks.append(synchronize_handler_async(local))
         for camera_mac_address in _dic_cameras_macs[local]:
             tasks.append(capture_handler_async(camera_mac_address))
             tasks.append(register_mode_handler_async(camera_mac_address))

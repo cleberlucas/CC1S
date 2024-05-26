@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import db, SystemFace, UnifranUser
+from models import db, SystemFace, UniversityUser
 import base64
 
 face_bp = Blueprint('face_bp', __name__)
@@ -79,7 +79,7 @@ def get_all_faces():
     """
     local_filter = request.args.get('local')
     if local_filter:
-        faces = db.session.query(SystemFace).join(UnifranUser, SystemFace.user_id == UnifranUser.user_id).filter(UnifranUser.local == local_filter).all()
+        faces = db.session.query(SystemFace).join(UniversityUser, SystemFace.user_id == UniversityUser.user_id).filter(UniversityUser.local == local_filter).all()
     else:
         faces = SystemFace.query.all()
     

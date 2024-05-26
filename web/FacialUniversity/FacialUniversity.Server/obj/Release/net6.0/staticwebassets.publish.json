@@ -1,13 +1,13 @@
 {
   "Version": 1,
-  "Hash": "76RwZ3S8wqmtJyA6IUqcm9eLsoZ/ngvoSCQ/vX+dJU4=",
+  "Hash": "vTNebgvAHFVSP1KpQ1ilMkryIOZMoBujFhyVR4qlquY=",
   "Source": "FacialUniversity.Server",
   "BasePath": "_content/FacialUniversity.Server",
   "Mode": "Default",
   "ManifestType": "Publish",
   "ReferencedProjectsConfiguration": [
     {
-      "Identity": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\facialuniversity.client.esproj",
+      "Identity": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\facialuniversity.client.esproj",
       "Version": 2,
       "Source": "facialuniversity.client",
       "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
@@ -21,12 +21,12 @@
   "DiscoveryPatterns": [],
   "Assets": [
     {
-      "Identity": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\assets\\1-BetmsHOx.gif",
+      "Identity": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\assets\\1U2Q-CjEl7S0_.gif",
       "SourceId": "facialuniversity.client",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\",
+      "ContentRoot": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\",
       "BasePath": "/",
-      "RelativePath": "assets/1-BetmsHOx.gif",
+      "RelativePath": "assets/1U2Q-CjEl7S0_.gif",
       "AssetKind": "Publish",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -37,15 +37,15 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\assets\\1-BetmsHOx.gif"
+      "OriginalItemSpec": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\assets\\1U2Q-CjEl7S0_.gif"
     },
     {
-      "Identity": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\assets\\2-AteDxK1z.gif",
+      "Identity": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\assets\\index-B1WHMiRX.css",
       "SourceId": "facialuniversity.client",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\",
+      "ContentRoot": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\",
       "BasePath": "/",
-      "RelativePath": "assets/2-AteDxK1z.gif",
+      "RelativePath": "assets/index-B1WHMiRX.css",
       "AssetKind": "Publish",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -56,15 +56,15 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\assets\\2-AteDxK1z.gif"
+      "OriginalItemSpec": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\assets\\index-B1WHMiRX.css"
     },
     {
-      "Identity": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\assets\\3-C1KaC1qS.gif",
+      "Identity": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\assets\\index-CjiR0G0c.js",
       "SourceId": "facialuniversity.client",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\",
+      "ContentRoot": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\",
       "BasePath": "/",
-      "RelativePath": "assets/3-C1KaC1qS.gif",
+      "RelativePath": "assets/index-CjiR0G0c.js",
       "AssetKind": "Publish",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -75,70 +75,13 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\assets\\3-C1KaC1qS.gif"
+      "OriginalItemSpec": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\assets\\index-CjiR0G0c.js"
     },
     {
-      "Identity": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\assets\\4-D-PMsegj.jpg",
+      "Identity": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\index.html",
       "SourceId": "facialuniversity.client",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\",
-      "BasePath": "/",
-      "RelativePath": "assets/4-D-PMsegj.jpg",
-      "AssetKind": "Publish",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\assets\\4-D-PMsegj.jpg"
-    },
-    {
-      "Identity": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\assets\\index-_o1upiqy.js",
-      "SourceId": "facialuniversity.client",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\",
-      "BasePath": "/",
-      "RelativePath": "assets/index-_o1upiqy.js",
-      "AssetKind": "Publish",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\assets\\index-_o1upiqy.js"
-    },
-    {
-      "Identity": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\assets\\index-CytaIvnE.css",
-      "SourceId": "facialuniversity.client",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\",
-      "BasePath": "/",
-      "RelativePath": "assets/index-CytaIvnE.css",
-      "AssetKind": "Publish",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\assets\\index-CytaIvnE.css"
-    },
-    {
-      "Identity": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\index.html",
-      "SourceId": "facialuniversity.client",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\",
+      "ContentRoot": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\",
       "BasePath": "/",
       "RelativePath": "index.html",
       "AssetKind": "Publish",
@@ -151,13 +94,13 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\index.html"
+      "OriginalItemSpec": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\index.html"
     },
     {
-      "Identity": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\vite.svg",
+      "Identity": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\vite.svg",
       "SourceId": "facialuniversity.client",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\",
+      "ContentRoot": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\",
       "BasePath": "/",
       "RelativePath": "vite.svg",
       "AssetKind": "Publish",
@@ -170,7 +113,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\dist\\vite.svg"
+      "OriginalItemSpec": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\dist\\vite.svg"
     }
   ]
 }

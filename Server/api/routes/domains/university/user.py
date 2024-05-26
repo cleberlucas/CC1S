@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
-from models import db, UnifranUser
+from models import db, UniversityUser
 
-externals_unifran_user_bp = Blueprint('externals_unifran_user_bp', __name__)
+domains_university_user_bp = Blueprint('domains_university_user_bp', __name__)
 
-@externals_unifran_user_bp.route('', methods=['POST'])
+@domains_university_user_bp.route('', methods=['POST'])
 def create_user():
     """
     Create a new user
@@ -39,7 +39,7 @@ def create_user():
               type: integer
     """
     data = request.json
-    new_user = UnifranUser(
+    new_user = UniversityUser(
         rgm=data['rgm'],
         user_id=data['user_id'],
         name=data.get('name'),
@@ -50,7 +50,7 @@ def create_user():
     db.session.commit()
     return jsonify({'rgm': new_user.rgm}), 201
 
-@externals_unifran_user_bp.route('/<int:rgm>', methods=['GET'])
+@domains_university_user_bp.route('/<int:rgm>', methods=['GET'])
 def get_user_by_rgm(rgm):
     """
     Get a user by RGM
@@ -64,9 +64,9 @@ def get_user_by_rgm(rgm):
       200:
         description: The user data
         schema:
-          $ref: '#/definitions/UnifranUser'
+          $ref: '#/definitions/UniversityUser'
     """
-    user = UnifranUser.query.filter_by(rgm=rgm).first_or_404()
+    user = UniversityUser.query.filter_by(rgm=rgm).first_or_404()
     return jsonify({
         'rgm': user.rgm,
         'user_id': user.user_id,
@@ -75,7 +75,32 @@ def get_user_by_rgm(rgm):
         'type': user.type,
     })
 
-@externals_unifran_user_bp.route('', methods=['GET'])
+@domains_university_user_bp.route('/user_id/<int:user_id>', methods=['GET'])
+def get_user_by_user_id(user_id):
+    """
+    Get a user by User ID
+    ---
+    parameters:
+      - name: user_id
+        in: path
+        type: integer
+        required: true
+    responses:
+      200:
+        description: The user data
+        schema:
+          $ref: '#/definitions/UniversityUser'
+    """
+    user = UniversityUser.query.filter_by(user_id=user_id).first_or_404()
+    return jsonify({
+        'rgm': user.rgm,
+        'user_id': user.user_id,
+        'name': user.name,
+        'local': user.local,
+        'type': user.type,
+    })
+
+@domains_university_user_bp.route('', methods=['GET'])
 def get_all_users():
     """
     Get all users
@@ -86,9 +111,9 @@ def get_all_users():
         schema:
           type: array
           items:
-            $ref: '#/definitions/UnifranUser'
+            $ref: '#/definitions/UniversityUser'
     """
-    users = UnifranUser.query.all()
+    users = UniversityUser.query.all()
     return jsonify([{
         'rgm': user.rgm,
         'user_id': user.user_id,
@@ -97,7 +122,7 @@ def get_all_users():
         'type': user.type,
     } for user in users])
 
-@externals_unifran_user_bp.route('/<int:rgm>', methods=['PUT'])
+@domains_university_user_bp.route('/<int:rgm>', methods=['PUT'])
 def update_user(rgm):
     """
     Update a user by RGM
@@ -128,7 +153,7 @@ def update_user(rgm):
         description: Success message
     """
     data = request.json
-    user = UnifranUser.query.filter_by(rgm=rgm).first_or_404()
+    user = UniversityUser.query.filter_by(rgm=rgm).first_or_404()
     user.user_id = data['user_id']
     user.name = data.get('name')
     user.local = data['local']
@@ -136,7 +161,7 @@ def update_user(rgm):
     db.session.commit()
     return jsonify({'message': 'User updated successfully'})
 
-@externals_unifran_user_bp.route('/<int:rgm>', methods=['DELETE'])
+@domains_university_user_bp.route('/<int:rgm>', methods=['DELETE'])
 def delete_user(rgm):
     """
     Delete a user by RGM
@@ -150,7 +175,7 @@ def delete_user(rgm):
       204:
         description: No content
     """
-    user = UnifranUser.query.filter_by(rgm=rgm).first_or_404()
+    user = UniversityUser.query.filter_by(rgm=rgm).first_or_404()
     db.session.delete(user)
     db.session.commit()
     return '', 204

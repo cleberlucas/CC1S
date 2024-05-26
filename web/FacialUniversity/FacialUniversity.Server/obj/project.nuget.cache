@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "eoT6YcHv2MJdyD2mrZhno3zq8IYKR2NPeHcMVWaf0i7P3d3OgadX82Ag65fGPkLjaUm3H2sdX4c0ACyQleGGeA==",
+  "dgSpecHash": "s0HJ0v2y7o8enmb/thsJkkT1FQFTvg5foyGhrAxdQYU7ypRft+N3x2vPvTlQFnJVaPA+RSuwbSqwtHcfCgtLNA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\FacialUniversity.Server\\FacialUniversity.Server.csproj",
+  "projectFilePath": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\FacialUniversity.Server\\FacialUniversity.Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\clebe\\.nuget\\packages\\microsoft.aspnetcore.spaproxy\\6.0.30\\microsoft.aspnetcore.spaproxy.6.0.30.nupkg.sha512",
     "C:\\Users\\clebe\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",

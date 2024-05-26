@@ -24,7 +24,6 @@ class SystemFace(db.Model):
 class SystemCapture(db.Model):
     __tablename__ = 'system_capture'
     id = db.Column(db.Integer, primary_key=True)
-    esp_id = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
     door = db.Column(db.Enum('entrance', 'exit'), nullable=False)
     local = db.Column(db.Integer, nullable=False)
@@ -46,17 +45,17 @@ class SystemEsp8266(db.Model):
     local = db.Column(db.Integer, nullable=False)
     last_start = db.Column(db.TIMESTAMP, nullable=False, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
-#EXTERNALS
-class UnifranUser(db.Model):
-    __tablename__ = 'unifran_user'
+#Domains
+class UniversityUser(db.Model):
+    __tablename__ = 'university_user'
     rgm = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(250))
     local = db.Column(db.Integer, nullable=False)
     type = db.Column(db.Enum('student', 'teacher'))
 
-class UnifranClassroom(db.Model):
-    __tablename__ = 'unifran_classroom'
+class UniversityClassroom(db.Model):
+    __tablename__ = 'university_classroom'
     teacher_id = db.Column(db.Integer, nullable=False)
     date = db.Column(db.Date, nullable=False)
     local = db.Column(db.Integer, nullable=False)

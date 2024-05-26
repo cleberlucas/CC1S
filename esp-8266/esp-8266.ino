@@ -20,48 +20,61 @@ const int D7 = 13;
 const int D8 = 15;
 
 #define ledYellow   D0
+#define button   D2
+#define ledBlue   D1
 #define ledRed   D6
 #define ledGreen   D7
-#define ledBlue   D8
+
+ulong userId;
+
+enum SynchronizeStatus {
+    SYNC_PENDING,
+    SYNCHRONIZE,
+    IGNORE
+};
+
+enum SynchronizeStatus synchronize = IGNORE;
+
+// Door control coming soon
 
 void handleLedYellowOn() {
   digitalWrite(ledYellow, HIGH);
-  sendResponse("LED Yellow turned on.");
+  server.send(200, "text/plain", "LED Yellow turned on.");
 }
 
 void handleLedYellowOff() {
   digitalWrite(ledYellow, LOW);
-  sendResponse("LED Yellow turned off.");
+  server.send(200, "text/plain", "LED Yellow turned off.");
 }
 
 void handleLedGreenOn() {
   digitalWrite(ledGreen, HIGH);
-  sendResponse("LED Green turned on.");
+  server.send(200, "text/plain", "LED Green turned on.");
 }
 
 void handleLedGreenOff() {
   digitalWrite(ledGreen, LOW);
-  sendResponse("LED Green turned off.");
+  server.send(200, "text/plain", "LED Green turned off.");
 }
 
 void handleLedRedOn() {
   digitalWrite(ledRed, HIGH);
-  sendResponse("LED Red turned on.");
+  server.send(200, "text/plain", "LED Red turned on.");
 }
 
 void handleLedRedOff() {
   digitalWrite(ledRed, LOW);
-  sendResponse("LED Red turned off.");
+  server.send(200, "text/plain", "LED Red turned off.");
 }
 
 void handleLedBlueOn() {
   digitalWrite(ledBlue, HIGH);
-  sendResponse("LED Blue turned on.");
+  server.send(200, "text/plain", "LED Blue turned on.");
 }
 
 void handleLedBlueOff() {
   digitalWrite(ledBlue, LOW);
-  sendResponse("LED Blue turned off.");
+  server.send(200, "text/plain", "LED Blue turned off.");
 }
 
 void handleOffLeds() {
@@ -69,7 +82,7 @@ void handleOffLeds() {
   digitalWrite(ledGreen, LOW);
   digitalWrite(ledRed, LOW);
   digitalWrite(ledBlue, LOW);
-  sendResponse("All LEDs turned off.");
+  server.send(200, "text/plain", "All LEDs turned off.");
 }
 
 void handleOnLeds() {
@@ -77,11 +90,66 @@ void handleOnLeds() {
   digitalWrite(ledGreen, HIGH);
   digitalWrite(ledRed, HIGH);
   digitalWrite(ledBlue, HIGH);
-  sendResponse("All LEDs turned on.");
+  server.send(200, "text/plain", "All LEDs turned on.");
 }
 
-void sendResponse(String message) {
-  server.send(200, "text/plain", message);
+void handleUserGet() {
+  String jsonResponse = "{\"user_id\":\"" + String(userId) + "\"}";
+  server.send(200, "application/json", jsonResponse);
+}
+
+void handleUserPut() {
+  if (server.hasArg("user_id")) {
+    String newUserId = server.arg("user_id");
+    userId = newUserId.toInt();
+    server.send(200, "text/plain", "User ID updated to: " + newUserId);
+  } else {
+    server.send(400, "text/plain", "No user_id parameter provided.");
+  }
+}
+
+void handleSynchronizePut() {
+  synchronize = SYNCHRONIZE;
+  server.send(200, "text/plain", "Synchronized.");
+}
+
+void handleSynchronizeGet() {
+  String status;
+  switch (synchronize) {
+    case SYNC_PENDING:
+      status = "SYNC_PENDING";
+      break;
+    case SYNCHRONIZE:
+      status = "SYNCHRONIZE";
+      break;
+    case IGNORE:
+      status = "IGNORE";
+      break;
+  }
+  
+  String jsonResponse = "{\"synchronize\":\"" + status + "\"}";
+  server.send(200, "application/json", jsonResponse);
+}
+
+void handleSecurity() {
+  if (digitalRead(D2) == 1 || synchronize == SYNCHRONIZE) {
+    if (synchronize == IGNORE) { 
+      synchronize = SYNC_PENDING;
+      if (userId == 0) {
+          digitalWrite(ledRed, HIGH);
+      } else {
+          digitalWrite(ledGreen, HIGH);
+      }
+    } else if (synchronize == SYNCHRONIZE) {
+        if (userId == 0) {
+          digitalWrite(ledRed, LOW);
+        } else {
+          digitalWrite(ledGreen, LOW);
+          userId = 0;
+        }
+        synchronize = IGNORE;
+    }
+  }
 }
 
 void setup() {
@@ -93,6 +161,8 @@ void setup() {
   pinMode(ledGreen, OUTPUT);
   pinMode(ledRed, OUTPUT);
   pinMode(ledBlue, OUTPUT);
+
+  pinMode(button, INPUT);
 
   handleOnLeds();
 
@@ -130,6 +200,12 @@ void setup() {
   server.on("/leds/on", HTTP_GET, handleOnLeds);
   server.on("/leds/off", HTTP_GET, handleOffLeds);
 
+  server.on("/user", HTTP_GET, handleUserGet);
+  server.on("/user", HTTP_PUT, handleUserPut);
+
+  server.on("/synchronize", HTTP_GET, handleSynchronizeGet);
+  server.on("/synchronize", HTTP_PUT, handleSynchronizePut);
+
   server.sendHeader("Access-Control-Allow-Origin", "*");
 
   server.begin();
@@ -139,4 +215,5 @@ void setup() {
 
 void loop() {
   server.handleClient();
+  handleSecurity();
 }

@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
-from models import db, UnifranUser, UnifranClassroom
+from models import db, UniversityUser, UniversityClassroom
 
-externals_unifran_classrom_bp = Blueprint('externals_unifran_classrom_bp', __name__)
+domains_university_classrom_bp = Blueprint('domains_university_classrom_bp', __name__)
 
-@externals_unifran_classrom_bp.route('', methods=['POST'])
+@domains_university_classrom_bp.route('', methods=['POST'])
 def create_classroom():
     """
     Create a new classroom
@@ -61,7 +61,7 @@ def create_classroom():
               type: integer
     """
     data = request.json
-    new_classroom = UnifranClassroom(
+    new_classroom = UniversityClassroom(
         teacher_id=data['teacher_id'],
         date=data['date'],
         local=data['local'],
@@ -75,7 +75,7 @@ def create_classroom():
     db.session.commit()
     return jsonify({'teacher_id': new_classroom.teacher_id, 'date': new_classroom.date, 'local': new_classroom.local}), 201
 
-@externals_unifran_classrom_bp.route('/<int:teacher_id>/<string:date>/<int:local>', methods=['GET'])
+@domains_university_classrom_bp.route('/<int:teacher_id>/<string:date>/<int:local>', methods=['GET'])
 def get_classroom_by_teacher_and_date(teacher_id, date, local):
     """
     Get a classroom by teacher ID, date, and location
@@ -98,9 +98,9 @@ def get_classroom_by_teacher_and_date(teacher_id, date, local):
       200:
         description: The classroom data
         schema:
-          $ref: '#/definitions/UnifranClassroom'
+          $ref: '#/definitions/UniversityClassroom'
     """
-    classroom = UnifranClassroom.query.filter_by(teacher_id=teacher_id, date=date, local=local).first_or_404()
+    classroom = UniversityClassroom.query.filter_by(teacher_id=teacher_id, date=date, local=local).first_or_404()
     return jsonify({
         'teacher_id': classroom.teacher_id,
         'date': classroom.date,
@@ -112,7 +112,7 @@ def get_classroom_by_teacher_and_date(teacher_id, date, local):
         'learning_time': classroom.learning_time
     })
 
-@externals_unifran_classrom_bp.route('', methods=['GET'])
+@domains_university_classrom_bp.route('', methods=['GET'])
 def get_all_classrooms():
     """
     Get all classrooms
@@ -123,9 +123,9 @@ def get_all_classrooms():
         schema:
           type: array
           items:
-            $ref: '#/definitions/UnifranClassroom'
+            $ref: '#/definitions/UniversityClassroom'
     """
-    classrooms = UnifranClassroom.query.all()
+    classrooms = UniversityClassroom.query.all()
     return jsonify([{
             'teacher_id': classroom.teacher_id,
             'date': classroom.date,
@@ -137,7 +137,7 @@ def get_all_classrooms():
             'learning_time': classroom.learning_time
     } for classroom in classrooms])
 
-@externals_unifran_classrom_bp.route('/<int:teacher_id>/<string:date>/<int:local>', methods=['PUT'])
+@domains_university_classrom_bp.route('/<int:teacher_id>/<string:date>/<int:local>', methods=['PUT'])
 def update_classroom(teacher_id, date, local):
     """
     Update a classroom by teacher ID, date, and location
@@ -185,7 +185,7 @@ def update_classroom(teacher_id, date, local):
         description: Success message
     """
     data = request.json
-    classroom = UnifranClassroom.query.filter_by(teacher_id=teacher_id, date=date, local=local).first_or_404()
+    classroom = UniversityClassroom.query.filter_by(teacher_id=teacher_id, date=date, local=local).first_or_404()
     classroom.start_class = data['start_class']
     classroom.end_class = data['end_class']
     classroom.start_interval = data['start_interval']
@@ -194,7 +194,7 @@ def update_classroom(teacher_id, date, local):
     db.session.commit()
     return jsonify({'message': 'Classroom updated successfully'})
 
-@externals_unifran_classrom_bp.route('/<int:teacher_id>/<string:date>/<int:local>', methods=['DELETE'])
+@domains_university_classrom_bp.route('/<int:teacher_id>/<string:date>/<int:local>', methods=['DELETE'])
 def delete_classroom(teacher_id, date, local):
     """
     Delete a classroom by teacher ID, date, and location
@@ -217,7 +217,7 @@ def delete_classroom(teacher_id, date, local):
       204:
         description: No content
     """
-    classroom = UnifranClassroom.query.filter_by(teacher_id=teacher_id, date=date, local=local).first_or_404()
+    classroom = UniversityClassroom.query.filter_by(teacher_id=teacher_id, date=date, local=local).first_or_404()
     db.session.delete(classroom)
     db.session.commit()
     return '', 204

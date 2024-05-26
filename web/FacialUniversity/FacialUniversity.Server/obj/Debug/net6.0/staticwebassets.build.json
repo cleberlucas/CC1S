@@ -1,13 +1,13 @@
 {
   "Version": 1,
-  "Hash": "SabX+9Swhs/gUyRSJsw4v4lKLKoNY2Z5y80B/8i72XM=",
+  "Hash": "ojT9pzczCQnsvTOGOLmLWjtofY9yDVtTbv8crQie2j8=",
   "Source": "FacialUniversity.Server",
   "BasePath": "_content/FacialUniversity.Server",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [
     {
-      "Identity": "C:\\Users\\clebe\\source\\repos\\FacialUniversity\\facialuniversity.client\\facialuniversity.client.esproj",
+      "Identity": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\facialuniversity.client\\facialuniversity.client.esproj",
       "Version": 2,
       "Source": "facialuniversity.client",
       "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",

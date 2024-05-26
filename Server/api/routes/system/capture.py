@@ -9,10 +9,6 @@ def create_capture():
     Create a new capture entry
     ---
     parameters:
-      - name: esp_id
-        in: body
-        type: integer
-        required: true
       - name: user_id
         in: body
         type: integer
@@ -37,7 +33,6 @@ def create_capture():
     """
     data = request.json
     new_capture = SystemCapture(
-        esp_id=data['esp_id'],
         user_id=data['user_id'],
         door=data['door'],
         local=data['local']
@@ -64,8 +59,6 @@ def get_capture(id):
           properties:
             id:
               type: integer
-            esp_id:
-              type: integer
             user_id:
               type: integer
             door:
@@ -80,7 +73,6 @@ def get_capture(id):
     capture = SystemCapture.query.get_or_404(id)
     return jsonify({
         'id': capture.id,
-        'esp_id': capture.esp_id,
         'user_id': capture.user_id,
         'door': capture.door,
         'local': capture.local,
@@ -108,7 +100,6 @@ def get_all_captures():
 
     return jsonify([{
         'id': capture.id,
-        'esp_id': capture.esp_id,
         'user_id': capture.user_id,
         'door': capture.door,
         'local': capture.local,
@@ -123,10 +114,6 @@ def update_capture(id):
     parameters:
       - name: id
         in: path
-        type: integer
-        required: true
-      - name: esp_id
-        in: body
         type: integer
         required: true
       - name: user_id
@@ -148,7 +135,6 @@ def update_capture(id):
     """
     data = request.json
     capture = SystemCapture.query.get_or_404(id)
-    capture.esp_id = data['esp_id']
     capture.user_id = data['user_id']
     capture.door = data['door']
     capture.local = data['local']

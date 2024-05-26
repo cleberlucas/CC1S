@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FacialUniversity.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d7bd888e200fd1c1f37c7c4e11bd96d2109e0eea")]
 [assembly: System.Reflection.AssemblyProductAttribute("FacialUniversity.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FacialUniversity.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
