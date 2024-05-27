@@ -1,0 +1,12 @@
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\PubTmp\Out\FacialUniversity.Server.exe
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\PubTmp\Out\appsettings.Development.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\PubTmp\Out\appsettings.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\PubTmp\Out\FacialUniversity.Server.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\PubTmp\Out\FacialUniversity.Server.deps.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\PubTmp\Out\FacialUniversity.Server.runtimeconfig.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\PubTmp\Out\FacialUniversity.Server.pdb
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\PubTmp\Out\Microsoft.AspNetCore.SpaProxy.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\PubTmp\Out\Microsoft.OpenApi.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\PubTmp\Out\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerUI.dll

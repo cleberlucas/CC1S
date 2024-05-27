@@ -1,0 +1,2 @@
+C:\Users\clebe\source\repos\FacialUniversity\facialuniversity.client\obj\Debug\facialuniversity.client.esproj.CoreCompileInputs.cache
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\facialuniversity.client\obj\Debug\facialuniversity.client.esproj.CoreCompileInputs.cache

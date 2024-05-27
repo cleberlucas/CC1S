@@ -1,0 +1,8 @@
+{
+"SpaProxyServer": {
+"ServerUrl": "https://localhost:5173",
+"LaunchCommand": "npm run dev",
+"WorkingDirectory": "C:\\Users\\clebe\\OneDrive\\Área de Trabalho\\CC1\\web\\FacialUniversity\\FacialUniversity.Server\\..\\facialuniversity.client",
+"MaxTimeoutInSeconds": "120"
+}
+}

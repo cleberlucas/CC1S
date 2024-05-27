@@ -1,0 +1,71 @@
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\spa.proxy.json
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\appsettings.Development.json
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\appsettings.json
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\FacialUniversity.Server.exe
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\FacialUniversity.Server.deps.json
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\FacialUniversity.Server.runtimeconfig.json
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\FacialUniversity.Server.dll
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\FacialUniversity.Server.pdb
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\Microsoft.AspNetCore.SpaProxy.dll
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\Microsoft.OpenApi.dll
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.csproj.AssemblyReference.cache
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\spa.proxy.json
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.AssemblyInfoInputs.cache
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.AssemblyInfo.cs
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.csproj.CoreCompileInputs.cache
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets.build.json
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets.development.json
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets\msbuild.FacialUniversity.Server.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets\msbuild.build.FacialUniversity.Server.props
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets\msbuild.buildMultiTargeting.FacialUniversity.Server.props
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets\msbuild.buildTransitive.FacialUniversity.Server.props
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets.pack.json
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\scopedcss\bundle\FacialUniversity.Server.styles.css
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUn.B7F3666D.Up2Date
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.dll
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\refint\FacialUniversity.Server.dll
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.pdb
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.genruntimeconfig.cache
+C:\Users\clebe\source\repos\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\ref\FacialUniversity.Server.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\appsettings.Development.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\appsettings.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\spa.proxy.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\FacialUniversity.Server.exe
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\FacialUniversity.Server.deps.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\FacialUniversity.Server.runtimeconfig.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\FacialUniversity.Server.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\FacialUniversity.Server.pdb
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\Microsoft.AspNetCore.SpaProxy.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\Microsoft.OpenApi.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\bin\Release\net6.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.csproj.AssemblyReference.cache
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\spa.proxy.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.AssemblyInfoInputs.cache
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.AssemblyInfo.cs
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.csproj.CoreCompileInputs.cache
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.sourcelink.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets.build.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets.development.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets\msbuild.FacialUniversity.Server.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets\msbuild.build.FacialUniversity.Server.props
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets\msbuild.buildMultiTargeting.FacialUniversity.Server.props
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets\msbuild.buildTransitive.FacialUniversity.Server.props
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\staticwebassets.pack.json
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\scopedcss\bundle\FacialUniversity.Server.styles.css
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUn.B7F3666D.Up2Date
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\refint\FacialUniversity.Server.dll
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.pdb
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\FacialUniversity.Server.genruntimeconfig.cache
+C:\Users\clebe\OneDrive\Área de Trabalho\CC1\web\FacialUniversity\FacialUniversity.Server\obj\Release\net6.0\ref\FacialUniversity.Server.dll
