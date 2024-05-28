@@ -8,6 +8,8 @@ def create_user():
     """
     Create a new user
     ---
+    tags:
+    - University user
     parameters:
       - name: rgm
         in: body
@@ -55,6 +57,8 @@ def get_user_by_rgm(rgm):
     """
     Get a user by RGM
     ---
+    tags:
+    - University user
     parameters:
       - name: rgm
         in: path
@@ -80,6 +84,8 @@ def get_user_by_user_id(user_id):
     """
     Get a user by User ID
     ---
+    tags:
+    - University user
     parameters:
       - name: user_id
         in: path
@@ -105,6 +111,8 @@ def get_all_users():
     """
     Get all users
     ---
+    tags:
+    - University user
     responses:
       200:
         description: A list of users
@@ -127,6 +135,8 @@ def update_user(rgm):
     """
     Update a user by RGM
     ---
+    tags:
+    - University user
     parameters:
       - name: rgm
         in: path
@@ -166,6 +176,8 @@ def delete_user(rgm):
     """
     Delete a user by RGM
     ---
+    tags:
+    - University user
     parameters:
       - name: rgm
         in: path

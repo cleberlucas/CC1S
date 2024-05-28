@@ -8,6 +8,8 @@ def create_classroom():
     """
     Create a new classroom
     ---
+    tags:
+    - University classrom
     parameters:
       - name: teacher_id
         in: body
@@ -80,6 +82,8 @@ def get_classroom_by_teacher_and_date(teacher_id, date, local):
     """
     Get a classroom by teacher ID, date, and location
     ---
+    tags:
+    - University classrom
     parameters:
       - name: teacher_id
         in: path
@@ -117,6 +121,8 @@ def get_all_classrooms():
     """
     Get all classrooms
     ---
+    tags:
+    - University classrom
     responses:
       200:
         description: A list of classrooms
@@ -142,6 +148,8 @@ def update_classroom(teacher_id, date, local):
     """
     Update a classroom by teacher ID, date, and location
     ---
+    tags:
+    - University classrom
     parameters:
       - name: teacher_id
         in: path
@@ -199,6 +207,8 @@ def delete_classroom(teacher_id, date, local):
     """
     Delete a classroom by teacher ID, date, and location
     ---
+    tags:
+    - University classrom
     parameters:
       - name: teacher_id
         in: path

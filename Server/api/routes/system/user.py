@@ -8,6 +8,8 @@ def create_user():
     """
     Create a new user
     ---
+    tags:
+    - User
     responses:
       201:
         description: The ID of the created user
@@ -27,6 +29,8 @@ def get_user(id):
     """
     Get a user by ID
     ---
+    tags:
+    - User
     parameters:
       - name: id
         in: path
@@ -52,6 +56,8 @@ def get_all_users():
     """
     Get all users
     ---
+    tags:
+    - User
     responses:
       200:
         description: A list of user IDs
@@ -71,6 +77,8 @@ def update_user(id):
     """
     Update a user by ID
     ---
+    tags:
+    - User
     parameters:
       - name: id
         in: path
@@ -96,6 +104,8 @@ def delete_user(id):
     """
     Delete a user by ID
     ---
+    tags:
+    - User
     parameters:
       - name: id
         in: path

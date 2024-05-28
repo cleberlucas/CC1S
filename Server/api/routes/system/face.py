@@ -9,6 +9,8 @@ def create_face():
     """
     Create a new face entry
     ---
+    tags:
+    - Face
     parameters:
       - name: user_id
         in: body
@@ -41,6 +43,8 @@ def get_face(id):
     """
     Get a face entry by ID
     ---
+    tags:
+    - Face
     parameters:
       - name: id
         in: path
@@ -69,6 +73,8 @@ def get_all_faces():
     """
     Get all face entries
     ---
+    tags:
+    - Face
     responses:
       200:
         description: A list of face entries
@@ -94,6 +100,8 @@ def update_face(id):
     """
     Update a face entry by ID
     ---
+    tags:
+    - Face
     parameters:
       - name: id
         in: path
@@ -126,6 +134,8 @@ def delete_face(id):
     """
     Delete a face entry by ID
     ---
+    tags:
+    - Face
     parameters:
       - name: id
         in: path

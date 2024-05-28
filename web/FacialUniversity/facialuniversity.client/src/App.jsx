@@ -18,13 +18,13 @@ function App() {
     return (
         <div>
             <nav>
-                <button className="menu-toggle" onClick={toggleMenu}>
+                <button className="menu-toggle no-shadow" onClick={toggleMenu}>
                     ☰
                 </button>
                 <ul className={isMenuOpen ? 'open' : ''}>
                     <li><a href="#inicio" onClick={() => handleNavigation('inicio')}>INÍCIO</a></li>
                     <li className="has-submenu">
-                        <a href="#acesso" onClick={() => handleNavigation('acesso')}>ACESSO</a>
+                        <a href="#acesso"  onClick={() => handleNavigation('acesso')}>ACESSO</a>
                         <ul>
                             <li className="has-submenu">
                                 <a href="#relatorios" onClick={() => handleNavigation('relatorios')}>Relatórios</a>
