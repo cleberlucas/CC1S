@@ -6,8 +6,10 @@ esp_8266_bp = Blueprint('esp_8266_bp', __name__)
 @esp_8266_bp.route('', methods=['POST'])
 def create_esp():
     """
-    Create a new ESP-8266 entry
+    Create a new ESP8266 entry
     ---
+    tags:
+    - ESP8266
     parameters:
       - name: mac
         in: body
@@ -19,7 +21,7 @@ def create_esp():
         required: true
     responses:
       201:
-        description: The ID of the created ESP-8266 entry
+        description: The ID of the created ESP8266 entry
         schema:
           type: object
           properties:
@@ -38,8 +40,10 @@ def create_esp():
 @esp_8266_bp.route('/<int:id>', methods=['GET'])
 def get_esp(id):
     """
-    Get an ESP-8266 entry by ID
+    Get an ESP8266 entry by ID
     ---
+    tags:
+    - ESP8266
     parameters:
       - name: id
         in: path
@@ -47,7 +51,7 @@ def get_esp(id):
         required: true
     responses:
       200:
-        description: The ESP-8266 entry data
+        description: The ESP8266 entry data
         schema:
           type: object
           properties:
@@ -72,11 +76,13 @@ def get_esp(id):
 @esp_8266_bp.route('', methods=['GET'])
 def get_all_esps():
     """
-    Get all ESP-8266 entries
+    Get all ESP8266 entries
     ---
+    tags:
+    - ESP8266
     responses:
       200:
-        description: A list of ESP-8266 entries
+        description: A list of ESP8266 entries
         schema:
           type: array
           items:
@@ -100,8 +106,10 @@ def get_all_esps():
 @esp_8266_bp.route('/<int:id>', methods=['PUT'])
 def update_esp(id):
     """
-    Update an ESP-8266 entry by ID
+    Update an ESP8266 entry by ID
     ---
+    tags:
+    - ESP8266
     parameters:
       - name: id
         in: path
@@ -124,13 +132,15 @@ def update_esp(id):
     esp_8266.mac = data['mac']
     esp_8266.local = data['local']
     db.session.commit()
-    return jsonify({'message': 'ESP-8266 updated successfully'})
+    return jsonify({'message': 'ESP8266 updated successfully'})
 
 @esp_8266_bp.route('/<int:id>', methods=['DELETE'])
 def delete_esp(id):
     """
-    Delete an ESP-8266 entry by ID
+    Delete an ESP8266 entry by ID
     ---
+    tags:
+    - ESP8266
     parameters:
       - name: id
         in: path
@@ -143,4 +153,4 @@ def delete_esp(id):
     esp_8266 = SystemEsp8266.query.get_or_404(id)
     db.session.delete(esp_8266)
     db.session.commit()
-    return jsonify({'message': 'ESP-8266 deleted successfully'})
+    return jsonify({'message': 'ESP8266 deleted successfully'})

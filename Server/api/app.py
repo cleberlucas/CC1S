@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, jsonify, send_file
 from flask_cors import CORS
 from flasgger import Swagger
 from models import db
 from models import Config
+import json
 
 def create_app():
     app = Flask(__name__)
@@ -24,8 +25,8 @@ def create_app():
     app.register_blueprint(capture_bp, url_prefix='/capture')
     app.register_blueprint(esp_32_cam_bp, url_prefix='/esp-32-cam')
     app.register_blueprint(esp_8266_bp, url_prefix='/esp-8266')
-    app.register_blueprint(domains_university_user_bp, url_prefix='/domains/university/user')
-    app.register_blueprint(domains_university_classrom_bp, url_prefix='/domains/university/classrom')
+    app.register_blueprint(domains_university_user_bp, url_prefix='/university/user')
+    app.register_blueprint(domains_university_classrom_bp, url_prefix='/university/classrom')
 
     CORS(app)
 

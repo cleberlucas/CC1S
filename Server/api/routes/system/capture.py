@@ -8,6 +8,8 @@ def create_capture():
     """
     Create a new capture entry
     ---
+    tags:
+      - Capture
     parameters:
       - name: user_id
         in: body
@@ -46,6 +48,8 @@ def get_capture(id):
     """
     Get a capture entry by ID
     ---
+    tags:
+      - Capture
     parameters:
       - name: id
         in: path
@@ -84,13 +88,28 @@ def get_all_captures():
     """
     Get all capture entries
     ---
+    tags:
+      - Capture
     responses:
       200:
         description: A list of capture entries
         schema:
           type: array
           items:
-            $ref: '#/definitions/Capture'
+            type: object
+            properties:
+              id:
+                type: integer
+              user_id:
+                type: integer
+              door:
+                type: string
+                enum: ['entrance', 'exit']
+              local:
+                type: integer
+              capture_time:
+                type: string
+                format: date-time
     """
     local_filter = request.args.get('local')
     if local_filter:
@@ -111,6 +130,8 @@ def update_capture(id):
     """
     Update a capture entry by ID
     ---
+    tags:
+      - Capture
     parameters:
       - name: id
         in: path
@@ -146,6 +167,8 @@ def delete_capture(id):
     """
     Delete a capture entry by ID
     ---
+    tags:
+      - Capture
     parameters:
       - name: id
         in: path

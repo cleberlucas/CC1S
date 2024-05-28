@@ -29,7 +29,7 @@ def create_university_user(rgm, name, local, user_type):
         "local": local,
         "type": user_type
     }
-    response = requests.post("http://localhost:5000/domains/university/user", json=payload)
+    response = requests.post("http://localhost:5000/university/user", json=payload)
 
     return user_id
 

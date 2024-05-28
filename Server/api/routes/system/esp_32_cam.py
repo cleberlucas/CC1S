@@ -6,8 +6,10 @@ esp_32_cam_bp = Blueprint('esp_32_cam_bp', __name__)
 @esp_32_cam_bp.route('', methods=['POST'])
 def create_esp():
     """
-    Create a new ESP-32-CAM entry
+    Create a new ESP32 CAM entry
     ---
+    tags:
+        - ESP32 CAM
     parameters:
       - name: mac
         in: body
@@ -26,7 +28,7 @@ def create_esp():
         type: integer
     responses:
       201:
-        description: The ID of the created ESP-32-CAM entry
+        description: The ID of the created ESP32 CAM entry
         schema:
           type: object
           properties:
@@ -47,8 +49,10 @@ def create_esp():
 @esp_32_cam_bp.route('/<int:id>', methods=['GET'])
 def get_esp(id):
     """
-    Get an ESP-32-CAM entry by ID
+    Get an ESP32 CAM entry by ID
     ---
+    tags:
+        - ESP32 CAM
     parameters:
       - name: id
         in: path
@@ -56,7 +60,7 @@ def get_esp(id):
         required: true
     responses:
       200:
-        description: The ESP-32-CAM entry data
+        description: The ESP32 CAM entry data
         schema:
           type: object
           properties:
@@ -88,15 +92,17 @@ def get_esp(id):
 @esp_32_cam_bp.route('', methods=['GET'])
 def get_all_esps():
     """
-    Get all ESP-32-CAM entries
+    Get all ESP32 CAM entries
     ---
+    tags:
+        - ESP32 CAM
     responses:
       200:
-        description: A list of ESP-32-CAM entries
+        description: A list of ESP32 CAM entries
         schema:
           type: array
           items:
-            $ref: '#/definitions/ESP-32-CAM'
+            $ref: '#/definitions/ESP32 CAM'
     """
     local_filter = request.args.get('local')
     mac_filter = request.args.get('mac')
@@ -121,8 +127,10 @@ def get_all_esps():
 @esp_32_cam_bp.route('/<int:id>', methods=['PUT'])
 def update_esp(id):
     """
-    Update an ESP-32-CAM entry by ID
+    Update an ESP32 CAM entry by ID
     ---
+    tags:
+        - ESP32 CAM
     parameters:
       - name: id
         in: path
@@ -161,14 +169,16 @@ def update_esp(id):
     
     db.session.commit()
     
-    return jsonify({'message': 'ESP-32-CAM updated successfully'})
+    return jsonify({'message': 'ESP32 CAM updated successfully'})
 
 
 @esp_32_cam_bp.route('/<int:id>', methods=['DELETE'])
 def delete_esp(id):
     """
-    Delete an ESP-32-CAM entry by ID
+    Delete an ESP32 CAM entry by ID
     ---
+    tags:
+        - ESP32 CAM
     parameters:
       - name: id
         in: path
@@ -181,4 +191,4 @@ def delete_esp(id):
     esp_32_cam = SystemEsp32Cam.query.get_or_404(id)
     db.session.delete(esp_32_cam)
     db.session.commit()
-    return jsonify({'message': 'ESP-32-CAM deleted successfully'})
+    return jsonify({'message': 'ESP32 CAM deleted successfully'})
