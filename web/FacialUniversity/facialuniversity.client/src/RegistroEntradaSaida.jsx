@@ -22,7 +22,7 @@ const RegistroEntradaSaida = () => {
                     if (registro.user_id === 0) {
                         return { ...registro, user_name: 'Desconhecido' };
                     } else {
-                        const userResponse = await fetch(`http://127.0.0.1:5000/domains/university/user/user_id/${registro.user_id}`);
+                        const userResponse = await fetch(`http://127.0.0.1:5000/university/user/user_id/${registro.user_id}`);
                         const userData = await userResponse.json();
                         return { ...registro, user_name: userData.name };
                     }

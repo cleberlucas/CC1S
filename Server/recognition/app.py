@@ -218,7 +218,7 @@ async def synchronize_handler_async(lock_local):
         print(f"synchronize_handler_async: Executed for lock local {lock_local}")
         await asyncio.sleep(1)
 
-async def capture_handler_async(camera_mac_address):
+async def capture_handler_async(camera_mac_address, rotate_video = False):
     print(f"capture_handler_async: Initialized for camera MAC camera address {camera_mac_address}")
 
     global _dic_ip
@@ -231,6 +231,11 @@ async def capture_handler_async(camera_mac_address):
 
     while True:
         ret, frame = cap.read()
+
+        if rotate_video:
+            frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+
         if not ret:
             print(f"capture_handler_async: Error reading frame for camera MAC address {camera_mac_address}")
             return
@@ -256,7 +261,7 @@ async def register_mode_handler_async(camera_mac_address):
 
         await asyncio.sleep(5)
 
-async def stream_video_handler_async(camera_mac_address, rotate_video=False, mirror_video=False):
+async def stream_video_handler_async(camera_mac_address, mirror_video=False):
     print(f"stream_video_handler_async: Initialized for camera MAC address {camera_mac_address}")
 
     global _dic_frame
@@ -266,9 +271,6 @@ async def stream_video_handler_async(camera_mac_address, rotate_video=False, mir
         if frame is None or frame.size == 0:
             await asyncio.sleep(0.2)
             continue
-
-        if rotate_video:
-            frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
 
         faces = _classifier_face.detectMultiScale(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
@@ -283,7 +285,7 @@ async def stream_video_handler_async(camera_mac_address, rotate_video=False, mir
 
         await asyncio.sleep(0.1)
 
-async def recognition_handler_async(lock_local, camera_mac_address, rotate_video=False):
+async def recognition_handler_async(lock_local, camera_mac_address):
     print(f"recognition_handler_async: Initialized for camera MAC address {camera_mac_address}")
 
     global _dic_frame
@@ -292,9 +294,6 @@ async def recognition_handler_async(lock_local, camera_mac_address, rotate_video
     last_state_face_detected = None
     while True:
         frame = _dic_frame[camera_mac_address].copy()
-
-        if rotate_video:
-            frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
 
         if frame is None or frame.size == 0:
             print(f"recognition_handler_async: Frame not detected for camera MAC address {camera_mac_address}")
@@ -376,10 +375,10 @@ async def run_tasks_sync():
         get_connection_sync(local)
         tasks.append(synchronize_handler_async(local))
         for camera_mac_address in _dic_cameras_macs[local]:
-            tasks.append(capture_handler_async(camera_mac_address))
+            tasks.append(capture_handler_async(camera_mac_address, True))
             tasks.append(register_mode_handler_async(camera_mac_address))
-            tasks.append(recognition_handler_async(local, camera_mac_address, True))
-            tasks.append(stream_video_handler_async(camera_mac_address, True, True))
+            tasks.append(recognition_handler_async(local, camera_mac_address))
+            tasks.append(stream_video_handler_async(camera_mac_address, True))
 
     await asyncio.gather(*tasks)
 

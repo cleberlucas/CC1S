@@ -20,10 +20,10 @@ const int D7 = 13;
 const int D8 = 15;
 
 #define ledYellow   D0
-#define button   D2
 #define ledBlue   D1
-#define ledRed   D6
-#define ledGreen   D7
+#define ledGreen   D2
+#define ledRed   D3
+#define button   D4
 
 ulong userId;
 
@@ -132,7 +132,8 @@ void handleSynchronizeGet() {
 }
 
 void handleSecurity() {
-  if (digitalRead(D2) == 1 || synchronize == SYNCHRONIZE) {
+  //Serial.println(digitalRead(button));
+  if (digitalRead(button) == 1 || synchronize == SYNCHRONIZE) {
     if (synchronize == IGNORE) { 
       synchronize = SYNC_PENDING;
       if (userId == 0) {
